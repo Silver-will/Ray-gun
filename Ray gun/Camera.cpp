@@ -22,6 +22,7 @@ Camera::Camera(uint16_t& height, uint16_t& width) :center{glm::vec3(0.0)}
 	generate_viewport_variables(height, width);
 }
 
+//Generate viewport
 void Camera::generate_viewport_variables(auto h, auto w)
 {
 	focal_length = 1.0f;
