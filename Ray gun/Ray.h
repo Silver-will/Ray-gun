@@ -1,6 +1,7 @@
 #ifndef RAY_H
 #define RAY_H
 #include<glm/glm.hpp>
+#include"Typedefs.h"
 struct Ray
 {
 	
@@ -11,6 +12,7 @@ struct Ray
 	glm::vec3 GetOrigin();
 	void SetDirection(const glm::vec3& dir);
 	void SetOrigin(const glm::vec3& orig);
+	float LengthSquared();
 private:
 	glm::vec3 origin;
 	glm::vec3 direction;

@@ -1,5 +1,5 @@
 #include "Ray.h"
-Ray::Ray()
+Ray::Ray() : origin{glm::vec3(0.0f)}, direction{glm::vec3(0.0f)}
 {
 
 }
@@ -32,4 +32,9 @@ void Ray::SetDirection(const glm::vec3& dir)
 void Ray::SetOrigin(const glm::vec3& orig)
 {
 	origin = orig;
+}
+
+float Ray::LengthSquared()
+{
+	return ((direction.x * direction.x) + (direction.y * direction.y) + (direction.z * direction.z));
 }

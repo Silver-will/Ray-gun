@@ -2,10 +2,10 @@
 #define COLOR_H
 #include<glm/glm.hpp>
 #include<iostream>
-#include"Ray.h";
-using color = glm::vec3;
+#include<span>
+#include "Shape.h"
 
-void WriteColor(std::ofstream& out, const color& col);
-color RayColor(Ray& r);
+void WriteColor(std::ofstream& out, const Color& col);
+Color RayColor(Ray& r, ShapeContainer& shapes);
 #endif
 
