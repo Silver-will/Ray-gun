@@ -15,7 +15,7 @@ private:
 	void PrintToFile();
 	void SetUpOutputFile();
 	void SetUpScene();
-	void AddSphere(float rad, Point pos, Color col);
+	void AddSphere(float rad, Point pos);
 	uint16_t WIDTH;
 	uint16_t HEIGHT;
 	std::ofstream image;

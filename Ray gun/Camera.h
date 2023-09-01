@@ -7,8 +7,8 @@ struct Camera
 	Camera(uint16_t& height, uint16_t& width);
 	Camera();
 	void generate_viewport_variables(auto h, auto w);
-	glm::vec3 GetPixelCenter(size_t& row, size_t& col);
-	glm::vec3 GetCameraOrigin();
+	glm::vec3 GetPixelCenter(size_t& row, size_t& col)const;
+	glm::vec3 GetCameraOrigin()const;
 private:
 	glm::vec3 center;
 	float viewport_height;

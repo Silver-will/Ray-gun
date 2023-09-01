@@ -2,23 +2,26 @@
 #include<iostream>
 
 #include "Color.h"
+#include"Common.h"
 
-void WriteColor(std::ofstream& out, const Color& col)
+void AnyHit(ShapeContainer& shapes, Ray& r, HitRecord& hit, double& tMin, double& tMax)
 {
-	out << static_cast<int>(255.999 * col.x) << ' '
-		<< static_cast<int>(255.999 * col.y) << ' '
-		<< static_cast<int>(255.999 * col.z) << "\n";
+	HitRecord temp_record;
+	bool hit_any{ false };
+	auto closest = tMax;
+
 }
 
-Color RayColor(Ray& r, ShapeContainer& shapes)
+Color RayColor(Ray& r, ShapeContainer& shapes,const Interval& ray_t)
 {
+	HitRecord rec;
+	auto closest = ray_t.max;
 	for (auto& sha : shapes)
 	{
-		auto t = sha->RayHit(r);
-		if (t > 0.0)
+		if (sha->RayHit(r,rec, Interval(ray_t.min, closest)))
 		{
-			glm::vec3 N = glm::normalize(r.At(t) - glm::vec3(0, 0, -1));
-			return 0.5f * Color(N.x + 1, N.y + 1, N.z + 1);
+			return 0.5f * (rec.normal + Color(1, 1, 1));
+			closest = rec.t;
 		}
 	}
 	glm::vec3 direct = glm::normalize(r.GetDirection());

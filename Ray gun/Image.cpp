@@ -18,9 +18,9 @@ void Image::SetUpOutputFile()
 	image.open(file, std::ofstream::out | std::ofstream::binary);
 }
 
-void Image::AddSphere(float rad, Point pos, Color col)
+void Image::AddSphere(float rad, Point pos)
 {
-	shapes.emplace_back(std::make_unique<Sphere>(pos, rad, col));
+	shapes.emplace_back(std::make_shared<Sphere>(pos, rad));
 }
 
 Image::~Image()
@@ -39,7 +39,7 @@ void Image::PrintToFile()
 		{
 			auto ray_dir = cam.GetPixelCenter(i,j) - cam.GetCameraOrigin();
 			Ray r(cam.GetCameraOrigin(), ray_dir);
-			Color pixel_color = RayColor(r, shapes);
+			Color pixel_color = RayColor(r, shapes, Interval(0, Common::infinity));
 			WriteColor(image, pixel_color);
 		}
 	}
@@ -47,5 +47,6 @@ void Image::PrintToFile()
 
 void Image::SetUpScene()
 {
-	AddSphere(0.6f, Point(0.0f,0.0f,-1.0f), Color(0.0f, 0.0f,0.5f));
+	AddSphere(0.6f, Point(0.0f,0.0f,-1.0f));
+	AddSphere(100.0f, Point(0, -100.5, -1));
 }
