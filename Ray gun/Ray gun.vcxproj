@@ -137,7 +137,9 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Interval.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Shape.cpp" />
@@ -145,7 +147,10 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="Hit.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Interval.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Typedefs.h" />

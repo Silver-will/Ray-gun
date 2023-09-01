@@ -14,12 +14,12 @@ glm::vec3 Ray::At(float t)
 	return origin + (t * direction);
 }
 
-glm::vec3 Ray::GetDirection()
+glm::vec3 Ray::GetDirection() const
 {
 	return direction;
 }
 
-glm::vec3 Ray::GetOrigin()
+glm::vec3 Ray::GetOrigin() const
 {
 	return origin;
 }

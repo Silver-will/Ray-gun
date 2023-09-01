@@ -5,12 +5,12 @@ Camera::Camera()
 
 }
 
-glm::vec3 Camera::GetCameraOrigin()
+glm::vec3 Camera::GetCameraOrigin() const 
 {
 	return center;
 }
 
-glm::vec3 Camera::GetPixelCenter(size_t& row, size_t& col)
+glm::vec3 Camera::GetPixelCenter(size_t& row, size_t& col) const
 {
 	auto r = static_cast<float>(row);
 	auto c = static_cast<float>(col);
