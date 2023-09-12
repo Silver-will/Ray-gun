@@ -12,15 +12,18 @@ void AnyHit(ShapeContainer& shapes, Ray& r, HitRecord& hit, double& tMin, double
 
 }
 
-Color RayColor(Ray& r, ShapeContainer& shapes,const Interval& ray_t)
+Color RayColor(const Ray& r, ShapeContainer& shapes,const Interval& ray_t, int max_depth)
 {
+	if (max_depth <= 0)
+		return Color(0.0f);
 	HitRecord rec;
 	auto closest = ray_t.max;
 	for (auto& sha : shapes)
 	{
-		if (sha->RayHit(r,rec, Interval(ray_t.min, closest)))
+		if (sha->RayHit(r,rec, Interval(0.001, closest)))
 		{
-			return 0.5f * (rec.normal + Color(1, 1, 1));
+			Point direction = rec.normal + RandomUnitVector();
+			return 0.5f * RayColor(Ray(rec.p, direction), shapes, ray_t, max_depth -1);
 			closest = rec.t;
 		}
 	}

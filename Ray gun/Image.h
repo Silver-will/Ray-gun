@@ -22,6 +22,7 @@ private:
 	double aspect_ratio;
 	Camera cam;
 	ShapeContainer shapes;
+	int sample_count;
 };
 #endif
 

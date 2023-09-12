@@ -6,7 +6,7 @@
 
 struct Shape
 {
-	virtual bool RayHit(Ray& r, HitRecord& hit,const Interval& ray_t) = 0;
+	virtual bool RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t) = 0;
 	virtual Color GetColor() = 0;
 	virtual Point GetPos() = 0;
 };
@@ -16,7 +16,7 @@ struct Sphere : public Shape
 	Sphere();
 	Sphere(Point orig, float rad, Color col);
 	Sphere(Point orig, float rad);
-	bool RayHit(Ray& r, HitRecord& hit,const Interval& ray_t) override;
+	bool RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t) override;
 	Color GetColor() override;
 	Point GetPos() override;
 private:
