@@ -7,7 +7,7 @@ struct Ray
 	
 	Ray();
 	Ray(glm::vec3 orig, glm::vec3 dir);
-	glm::vec3 At(float t);
+	glm::vec3 At(float t)const;
 	glm::vec3 GetDirection() const;
 	glm::vec3 GetOrigin() const;
 	void SetDirection(const glm::vec3& dir);

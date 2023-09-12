@@ -14,12 +14,17 @@ inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 	r *= scale;
 	g *= scale;
 	b *= scale;
+
+	r = LinearToGamma(r);
+	g = LinearToGamma(g);
+	b = LinearToGamma(b);
+
 	static const Interval intensity(0.000, 0.999);
 	out << static_cast<int>(255.999 * intensity.clamp(r)) << ' '
 		<< static_cast<int>(255.999 * intensity.clamp(g)) << ' '
 		<< static_cast<int>(255.999 * intensity.clamp(b)) << "\n";
 }
-Color RayColor(Ray& r, ShapeContainer& shapes,const Interval& ray_t);
+Color RayColor(const Ray& r, ShapeContainer& shapes,const Interval& ray_t, int max_depth);
 void AnyHit(ShapeContainer& shapes, Ray& r, HitRecord& hit, const double& tMin, const double& tMax);
 #endif
 

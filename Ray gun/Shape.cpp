@@ -17,7 +17,7 @@ Sphere::Sphere() : Center{glm::vec3(0.0f)}, radius{0.3f},
 {
 
 }
-bool Sphere::RayHit(Ray& r, HitRecord& hit,const Interval& ray_t)
+bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)
 {
 	glm::vec3 oc = r.GetOrigin() - Center;
 	auto a = glm::dot(r.GetDirection(), r.GetDirection());

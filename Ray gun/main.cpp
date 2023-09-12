@@ -5,5 +5,5 @@
 
 int main()
 {
-	Image sky(600, 16.0 / 9.0);
+	Image sky(800, 16.0 / 9.0);
 }

@@ -141,6 +141,7 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Interval.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Shape.cpp" />
   </ItemGroup>
@@ -151,6 +152,7 @@
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Interval.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Typedefs.h" />

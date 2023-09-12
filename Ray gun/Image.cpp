@@ -30,6 +30,7 @@ Image::~Image()
 
 void Image::PrintToFile()
 {
+	sample_count = 10;
 	image << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 
 	for (size_t j = 0; j < HEIGHT; j++)
@@ -37,10 +38,13 @@ void Image::PrintToFile()
 		std::cout << "Lines left = " << HEIGHT - j << "\n";
 		for (size_t i = 0; i < WIDTH; i++)
 		{
-			auto ray_dir = cam.GetPixelCenter(i,j) - cam.GetCameraOrigin();
-			Ray r(cam.GetCameraOrigin(), ray_dir);
-			Color pixel_color = RayColor(r, shapes, Interval(0, Common::infinity));
-			WriteColor(image, pixel_color);
+			Color pixel_color = Color(0.0f);
+			for (size_t sample = 0; sample < sample_count; sample++)
+			{
+				auto ray = cam.GetRay(i, j);
+			    pixel_color += RayColor(ray, shapes, Interval(0, Common::infinity),40);
+			}
+			WriteColor(image, pixel_color, sample_count);
 		}
 	}
 }
