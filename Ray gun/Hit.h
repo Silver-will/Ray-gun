@@ -2,6 +2,7 @@
 #define HIT_RECORD_H
 #include "Typedefs.h"
 #include "Ray.h"
+#include<memory>
 struct Material;
 struct HitRecord
 {

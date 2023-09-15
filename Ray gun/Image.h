@@ -15,7 +15,10 @@ private:
 	void PrintToFile();
 	void SetUpOutputFile();
 	void SetUpScene();
-	void AddSphere(float rad, Point pos);
+	void AddSphere(float rad, Point pos, Color col);
+	void AddMetal(float rad,float fuzz, Point pos, Color col);
+	void AddLambder(float rad, Point pos,Color col);
+	void AddDielectric(float rad, Point pos, double refractive_index);
 	uint16_t WIDTH;
 	uint16_t HEIGHT;
 	std::ofstream image;

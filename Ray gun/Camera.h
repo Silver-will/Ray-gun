@@ -11,6 +11,11 @@ struct Camera
 	Ray GetRay(size_t& row, size_t& col)const;
 	glm::vec3 GetCameraOrigin()const;
 	glm::vec3 PixelSampleSquare() const;
+	Point DefocusDiskSample()const;
+	void setCameraAngle(Point look_f = Point(0,0,-1), Point look_a = Point(0),Point vup = Point(0,1,0),
+		double fov = 90);
+	float defocus_angle = 0;
+	float focus_dist = 10;
 private:
 	uint16_t sample_count;
 	uint16_t max_depth;
@@ -18,11 +23,20 @@ private:
 	float viewport_height;
 	float viewport_width;
 	float focal_length;
+	uint16_t image_height;
+	uint16_t image_width;
 	glm::vec3 viewport_u;
 	glm::vec3 viewport_v;
 	glm::vec3 pixel_delta_u;
 	glm::vec3 pixel_delta_v;
 	glm::vec3 viewport_upper_left;
 	glm::vec3 pixel100_loc;
+	Point look_at;
+	Point look_from;
+	glm::vec3 v_up;
+	glm::vec3 u_, v_, w_;
+	glm::vec3 defocus_disk_u;
+	glm::vec3 defocus_disk_v;
+	double vfov = 90;
 };
 #endif

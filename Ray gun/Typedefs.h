@@ -4,4 +4,5 @@
 
 using Point = glm::vec3;
 using Color = glm::vec3;
+enum class MaterialType { metal, lambder };
 #endif
