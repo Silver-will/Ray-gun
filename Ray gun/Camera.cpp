@@ -2,8 +2,7 @@
 #include "Common.h"
 Camera::Camera()
 {
-	sample_count = 10;
-	max_depth = 5;
+
 }
 
 glm::vec3 Camera::GetCameraOrigin() const 
@@ -17,38 +16,67 @@ Ray Camera::GetRay(size_t& row, size_t& col) const
 	auto c = static_cast<float>(col);
 	glm::vec3 pixel_center = pixel100_loc + (r * pixel_delta_u) + (c * pixel_delta_v);
 	auto pixel_sample = pixel_center + PixelSampleSquare();
-	auto ray_origin = center;
+	auto ray_origin = defocus_angle <= 0 ? center : DefocusDiskSample();
 	auto ray_direction = pixel_sample - ray_origin;
 
 	return Ray(ray_origin, ray_direction);
 }
-Camera::Camera(uint16_t& height, uint16_t& width) :center{glm::vec3(0.0)}
+Camera::Camera(uint16_t& height, uint16_t& width):image_height{height}, image_width{width}
 {
-	generate_viewport_variables(height, width);
+	look_from = Point(0, 0, -1);
+	look_at = Point(0, 0, 0);
+	v_up = glm::vec3(0, 1, 0);
+	sample_count = 10;
+	max_depth = 5;
 }
 
 //Generate viewport
 void Camera::generate_viewport_variables(auto h, auto w)
 {
-	focal_length = 1.0f;
-	viewport_height = 2.0f;
+	center = look_from;
+
+	auto theta = degress_to_radians(vfov);
+	auto hi = tan(theta / 2);
+	viewport_height = 2.0f * hi * focus_dist;
 	viewport_width = viewport_height * (static_cast<float>(w) / h);
 
-	viewport_u = glm::vec3(viewport_width, 0, 0);
-	viewport_v = glm::vec3(0, -viewport_height, 0);
+	w_ = glm::normalize(look_from - look_at);
+	u_ = glm::normalize(glm::cross(v_up, w_));
+	v_ = glm::cross(w_, u_);
+
+	viewport_u = viewport_width * u_;
+	viewport_v = viewport_height * -v_;
 
 	pixel_delta_u = viewport_u / (float)w;
 	pixel_delta_v = viewport_v / (float)h;
 
-	viewport_upper_left = center - glm::vec3(0, 0, focal_length) - (viewport_u / 2.0f) - (viewport_v / 2.0f);
+	viewport_upper_left = center - (focus_dist * w_) - (viewport_u / 2.0f) - (viewport_v / 2.0f);
 
+	float defocus_radius = focus_dist * tan(degress_to_radians(defocus_angle / 2));
+	defocus_disk_u = u_ * defocus_radius;
+	defocus_disk_v = v_ * defocus_radius;
 	pixel100_loc = viewport_upper_left + 0.5f * (pixel_delta_u + pixel_delta_v);
 
 }
 
 glm::vec3 Camera::PixelSampleSquare() const
 {
-	float px = -0.5 * random_double();
-	float py = -0.5 * random_double();
+	float px = -0.5 + random_double();
+	float py = -0.5 + random_double();
 	return glm::vec3((px * pixel_delta_u) + (py * pixel_delta_v));
+}
+
+void Camera::setCameraAngle(Point look_f, Point look_a,Point vup, double fov)
+{
+	look_from = look_f;
+	look_at = look_a;
+	vfov = fov;
+	v_up = vup;
+	generate_viewport_variables(image_height, image_width);
+}
+
+Point Camera::DefocusDiskSample() const
+{
+	auto p = RandomInUnitDisk();
+	return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
 }

@@ -1,13 +1,14 @@
 #include "Shape.h"
+#include "Material.h"
 #include<iostream>
-Sphere::Sphere(Point orig, float rad, Color col) : Center{orig}, 
+Sphere::Sphere(Point orig, float rad, Color col) : Center{orig},
 	radius{rad}, color{col}
 {
 
 }
 
-Sphere::Sphere(Point orig, float rad) : Center{ orig },
-radius{ rad }
+Sphere::Sphere(Point orig, float rad, std::shared_ptr<Material> Mat) : Center{ orig },
+radius{ rad }, mat{Mat}, color{glm::vec3(0.0f)}
 {
 
 }
@@ -40,10 +41,9 @@ bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)
 	
 	hit.t = root;
 	hit.p = r.At(hit.t);
-	hit.normal = (hit.p - Center) / radius;
-
 	glm::vec3 outwardNormal = (hit.p - Center) / radius;
 	hit.setFaceNormal(r, outwardNormal);
+	hit.mat = mat;
 
 	return true;
 }
