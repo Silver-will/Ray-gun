@@ -32,18 +32,28 @@ void Image::AddMetal(float rad, float fuzz, Point pos, Color col)
 {
 	auto metal = std::make_shared<Metal>(col,fuzz);
 	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, metal));
+	shape_box = AABB(shape_box,shapes.back()->GetBoundingBox());
 }
 
 void Image::AddLambder(float rad, Point pos, Color col)
 {
 	auto lambder = std::make_shared<Lambertian>(col);
 	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, lambder));
+	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
+}
+
+void Image::AddLambder(float rad, Point pos, Point pos2, Color col)
+{
+	auto lambder = std::make_shared<Lambertian>(col);
+	shapes.emplace_back(std::make_shared<Sphere>(pos,pos2, rad, lambder));
+	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
 }
 
 void Image::AddDielectric(float rad, Point pos, double refractive_index)
 {
 	auto dielectric = std::make_shared<Dielectric>(refractive_index);
 	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, dielectric));
+	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
 }
 
 Image::~Image()
@@ -90,7 +100,8 @@ void Image::SetUpScene()
 				if (choose_mat < 0.8f)
 				{
 					auto albedo = RandomVector() * RandomVector();
-					AddLambder(0.2f, center, albedo);
+					auto center2 = center + Point(0, random_double(0, .5), 0);
+					AddLambder(0.2f, center,center2, albedo);
 				}
 				else if (choose_mat < 0.95)
 				{
@@ -105,8 +116,12 @@ void Image::SetUpScene()
 			}
 		}
 	}
+	AddLambder(2.0f, Point(-4, 1, 0), Color(0.4, 0.2, 0.1));
 	AddDielectric(1.0f, Point(0, 1, 0), 1.5);
-	AddLambder(1.0f, Point(-4, 1, 0), Color(0.4, 0.2, 0.1));
 	AddMetal(1.0f, 0.0f, Point(4, 1, 0), Color(0.7, 0.6, 0.5));
+}
 
+AABB Image::GetShapeBox()
+{
+	return shape_box;
 }

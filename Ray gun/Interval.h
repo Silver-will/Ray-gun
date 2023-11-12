@@ -8,6 +8,7 @@ struct Interval
 
 	Interval();
 	Interval(double _min, double _max);
+	Interval(const Interval& a, const Interval& b);
 
 	bool contains(double x) const;
 	bool surrounds(double x) const;
