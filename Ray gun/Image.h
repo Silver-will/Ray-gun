@@ -18,7 +18,9 @@ private:
 	void AddSphere(float rad, Point pos, Color col);
 	void AddMetal(float rad,float fuzz, Point pos, Color col);
 	void AddLambder(float rad, Point pos,Color col);
+	void AddLambder(float rad, Point pos, Point pos2, Color col);
 	void AddDielectric(float rad, Point pos, double refractive_index);
+	AABB GetShapeBox();
 	uint16_t WIDTH;
 	uint16_t HEIGHT;
 	std::ofstream image;
@@ -26,6 +28,7 @@ private:
 	Camera cam;
 	ShapeContainer shapes;
 	int sample_count;
+	AABB shape_box;
 };
 #endif
 
