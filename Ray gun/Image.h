@@ -6,6 +6,7 @@
 #include<memory>
 #include "Camera.h"
 #include "Shape.h"
+#include "Texture.h"
 
 struct Image
 {
@@ -17,7 +18,7 @@ private:
 	void SetUpScene();
 	void AddSphere(float rad, Point pos, Color col);
 	void AddMetal(float rad,float fuzz, Point pos, Color col);
-	void AddLambder(float rad, Point pos,Color col);
+	void AddLambder(float rad, Point pos, std::shared_ptr<Texture> col);
 	void AddLambder(float rad, Point pos, Point pos2, Color col);
 	void AddDielectric(float rad, Point pos, double refractive_index);
 	AABB GetShapeBox();

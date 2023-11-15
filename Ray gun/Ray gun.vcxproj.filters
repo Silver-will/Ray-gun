@@ -45,6 +45,12 @@
     <ClCompile Include="AABB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BVH.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h">
@@ -78,6 +84,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AABB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BVH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,6 +2,7 @@
 #define MATERIAL_H
 #include "Common.h"
 #include "Shape.h"
+#include "Texture.h"
 struct HitRecord;
 struct Ray;
 
@@ -14,10 +15,11 @@ struct Material
 
 struct Lambertian : public Material {
 	Lambertian(const Color& a);
+	Lambertian(std::shared_ptr<Texture> a);
 	bool Scatter(const Ray& r_in, const HitRecord& rec,Color& attenuation, Ray& scattered)const override;
 
 private:
-	Color albedo;
+	std::shared_ptr<Texture> albedo;
 };
 
 struct Metal : public Material {

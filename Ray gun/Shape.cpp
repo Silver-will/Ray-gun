@@ -2,7 +2,7 @@
 #include "Material.h"
 #include<iostream>
 Sphere::Sphere(Point orig, float rad, Color col) : center{orig},
-	radius{rad}, color{col}
+	radius{rad}, color{col},isMoving{false}
 {
 
 }

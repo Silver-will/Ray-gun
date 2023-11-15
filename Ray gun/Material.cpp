@@ -1,9 +1,14 @@
 #include "Material.h"
 #include "Hit.h"
 #include<iostream>
-Lambertian::Lambertian(const Color& a) : albedo{a}
+Lambertian::Lambertian(const Color& a) : albedo(std::make_shared<SolidColor>(a))
 {
 
+}
+
+Lambertian::Lambertian(std::shared_ptr<Texture> a) : albedo{a}
+{
+	
 }
 
 bool Lambertian::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const
@@ -15,7 +20,7 @@ bool Lambertian::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuati
 		scatter_dir = rec.normal;
 	}
 	scattered = Ray(rec.p, scatter_dir,r_in.GetTime());
-	attenuation = albedo;
+	attenuation = albedo->Value(rec.u,rec.v,rec.p);
 	return true;
 }
 
@@ -43,7 +48,7 @@ bool Dielectric::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuati
 	float refraction_ratio = rec.frontFace ? (1.0f / ir) : ir;
 	glm::vec3 unit_direction = glm::normalize(r_in.GetDirection());
 	float cos_theta = fmin(glm::dot(-unit_direction, rec.normal), 1.0);
-	float sin_theta = pow((1.0 - cos_theta*cos_theta), 1.0 / 2.0);
+	float sin_theta = sqrtf(1.0 - cos_theta*cos_theta);
 	bool cannot_refract = refraction_ratio * sin_theta > 1.0;
 	glm::vec3 direction;
 	if (cannot_refract || reflectance(cos_theta, refraction_ratio) > random_double())

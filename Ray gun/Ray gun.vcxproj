@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
+    <ClCompile Include="BVH.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Hit.cpp" />
@@ -145,9 +146,11 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Common.h" />
@@ -157,6 +160,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Shape.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Typedefs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
