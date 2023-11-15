@@ -1,6 +1,8 @@
 #include "Image.h"
 #include "Color.h"
 #include "Material.h"
+#include "BVH.h"
+
 #include<chrono>
 using namespace std::literals;
 Image::Image(uint16_t width, double aspectRatio)
@@ -35,7 +37,7 @@ void Image::AddMetal(float rad, float fuzz, Point pos, Color col)
 	shape_box = AABB(shape_box,shapes.back()->GetBoundingBox());
 }
 
-void Image::AddLambder(float rad, Point pos, Color col)
+void Image::AddLambder(float rad, Point pos, std::shared_ptr<Texture> col)
 {
 	auto lambder = std::make_shared<Lambertian>(col);
 	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, lambder));
@@ -63,7 +65,7 @@ Image::~Image()
 
 void Image::PrintToFile()
 {
-	sample_count = 8;
+	sample_count = 20;
 	image << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 	auto draw_start = std::chrono::steady_clock::now();
 	for (size_t j = 0; j < HEIGHT; j++)
@@ -75,7 +77,7 @@ void Image::PrintToFile()
 			for (size_t sample = 0; sample < sample_count; sample++)
 			{
 				auto ray = cam.GetRay(i, j);
-			    pixel_color += RayColor(ray, shapes, 10);
+			    pixel_color += RayColor(ray, shapes, 8);
 			}
 			WriteColor(image, pixel_color, sample_count);
 		}
@@ -86,8 +88,8 @@ void Image::PrintToFile()
 
 void Image::SetUpScene()
 {
-
-	AddLambder(1000.0f, Point(0, -1000, -1.0), Color(0.5, 0.5, 0.5));
+	auto checker = std::make_shared<CheckerTexture>(0.32, Color(.2,.3,.1),Color(.9));
+	AddLambder(1000.0f, Point(0, -1000, -1.0), checker);
 	for (int a = -11; a < 11; a++)
 	{
 		for (int b = -11; b < 11; b++)
@@ -116,9 +118,13 @@ void Image::SetUpScene()
 			}
 		}
 	}
-	AddLambder(2.0f, Point(-4, 1, 0), Color(0.4, 0.2, 0.1));
-	AddDielectric(1.0f, Point(0, 1, 0), 1.5);
+	AddLambder(1.0f, Point(-4, 1, 0), checker);
+	AddDielectric(1.0f, Point(0, 1, 0), 1.5f);
 	AddMetal(1.0f, 0.0f, Point(4, 1, 0), Color(0.7, 0.6, 0.5));
+	
+
+	auto volumes = std::make_shared<BVH_Node>(shapes);
+	shapes = ShapeContainer(1,volumes);
 }
 
 AABB Image::GetShapeBox()

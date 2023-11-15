@@ -10,6 +10,8 @@ struct HitRecord
 	glm::vec3 normal;
 	std::shared_ptr<Material>mat;
 	double t;
+	double u;
+	double v;
 	bool frontFace;
 	void setFaceNormal(const Ray& r, const glm::vec3& outward);
 };

@@ -9,8 +9,8 @@
 struct Shape
 {
 	virtual bool RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t) = 0;
-	virtual Color GetColor() = 0;
-	virtual Point GetPos() = 0;
+	virtual Color GetColor() { return Color(0); }
+	virtual Point GetPos() { return Point(0); }
 	virtual AABB GetBoundingBox()const = 0;
 };
 
@@ -34,8 +34,6 @@ private:
 	bool isMoving;
 	AABB BBox;
 };
-
-
 
 using ShapeContainer = std::vector<std::shared_ptr<Shape>>;
 #endif
