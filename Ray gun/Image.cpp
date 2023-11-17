@@ -11,11 +11,22 @@ Image::Image(uint16_t width, double aspectRatio)
 	auto h = static_cast<int>(WIDTH / aspectRatio);
 	HEIGHT = (h > 0) ? h : 1;
 	cam = Camera(HEIGHT, WIDTH);
-	cam.defocus_angle = 0.6;
-	cam.focus_dist = 10.0;
-	cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0),Point(0,1,0),20.0);
+	switch (scene)
+	{
+	case 1:
+		SetCameraFocusValues(0.6, 10.0);
+		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
+		SetUpRandomBallScene();
+		break;
+	case 2:
+		SetCameraFocusValues(0, 10.0);
+		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
+		SetUpSphereScene();
+		break;
+	default:
+		break;
+	}
 	SetUpOutputFile();
-	SetUpScene();
 	PrintToFile();
 }
 
@@ -86,7 +97,15 @@ void Image::PrintToFile()
 	std::cout << "Total time taken: " << (draw_end - draw_start) / 1s <<" seconds" << std::endl;;
 }
 
-void Image::SetUpScene()
+void Image::SetUpSphereScene()
+{
+	auto checker = std::make_shared<CheckerTexture>(0.32, Color(.2, .3, .1), Color(.9));
+	AddLambder(10.0f, Point(0, -10, -1.0), checker);
+	AddLambder(10.0f, Point(0, 10, -1.0), checker);
+
+}
+
+void Image::SetUpRandomBallScene()
 {
 	auto checker = std::make_shared<CheckerTexture>(0.32, Color(.2,.3,.1),Color(.9));
 	AddLambder(1000.0f, Point(0, -1000, -1.0), checker);
@@ -130,4 +149,15 @@ void Image::SetUpScene()
 AABB Image::GetShapeBox()
 {
 	return shape_box;
+}
+
+void Image::SetCameraFocusValues(float defocus_angle, float focus_distance)
+{
+	cam.defocus_angle = defocus_angle;
+	cam.focus_dist = focus_distance;
+}
+
+void Image::SetUpEarthScene()
+{
+
 }

@@ -1,8 +1,10 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 #include"Typedefs.h"
+#include"Texture.h"
 #include<memory>
 #include<utility>
+
 struct Texture
 {
 	virtual ~Texture() = default;
@@ -30,6 +32,12 @@ private:
 	double invScale;
 	std::shared_ptr<Texture> even;
 	std::shared_ptr<Texture> odd;
+};
+
+struct ImageTexture : public Texture
+{
+	ImageTexture(const char* filename);
+
 };
 #endif
 

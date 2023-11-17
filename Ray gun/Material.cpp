@@ -1,6 +1,7 @@
 #include "Material.h"
 #include "Hit.h"
 #include<iostream>
+
 Lambertian::Lambertian(const Color& a) : albedo(std::make_shared<SolidColor>(a))
 {
 

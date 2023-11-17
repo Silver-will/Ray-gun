@@ -51,6 +51,7 @@ bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)
 	hit.p = r.At(hit.t);
 	glm::vec3 outwardNormal = (hit.p - center) / radius;
 	hit.setFaceNormal(r, outwardNormal);
+	GetSphereUV(outwardNormal, hit.u, hit.v);
 	hit.mat = mat;
 
 	return true;
@@ -78,4 +79,12 @@ Point Sphere::LerpCenter(double time)
 AABB Sphere::GetBoundingBox()const
 {
 	return BBox;
+}
+
+void Sphere::GetSphereUV(const Point& p, double& u, double& v)
+{
+	auto theta = acos(-p.y);
+	auto phi = atan2(-p.z, p.x + pi);
+	u = phi / (2 * pi);
+	v = theta / pi;
 }

@@ -26,6 +26,7 @@ struct Sphere : public Shape
 	Point LerpCenter(double time);
 	AABB GetBoundingBox()const override;
 private:
+	static void GetSphereUV(const Point& p, double& u, double& v);
 	std::shared_ptr<Material> mat;
 	Point center;
 	Point centerVec;
