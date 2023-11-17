@@ -15,7 +15,9 @@ struct Image
 private:
 	void PrintToFile();
 	void SetUpOutputFile();
-	void SetUpScene();
+	void SetUpRandomBallScene();
+	void SetUpSphereScene();
+	void SetCameraFocusValues(float defocus_angle, float focus_distance);
 	void AddSphere(float rad, Point pos, Color col);
 	void AddMetal(float rad,float fuzz, Point pos, Color col);
 	void AddLambder(float rad, Point pos, std::shared_ptr<Texture> col);
@@ -30,6 +32,7 @@ private:
 	ShapeContainer shapes;
 	int sample_count;
 	AABB shape_box;
+	int scene = 2;
 };
 #endif
 

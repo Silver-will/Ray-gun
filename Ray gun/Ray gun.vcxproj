@@ -141,6 +141,7 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="ImageLoader.cpp" />
     <ClCompile Include="Interval.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="ImageLoader.h" />
     <ClInclude Include="Interval.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Ray.h" />
