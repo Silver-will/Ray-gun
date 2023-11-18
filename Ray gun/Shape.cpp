@@ -40,10 +40,10 @@ bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)
 	auto sqrtd = sqrt(discriminant);
 
 	auto root = (-half_b - sqrtd) / a;
-	if (!ray_t.surrounds(root))
+	if (!ray_t.Surrounds(root))
 	{
 		root = (-half_b + sqrtd) / a;
-		if (!ray_t.surrounds(root))
+		if (!ray_t.Surrounds(root))
 			return false;
 	}
 	
@@ -84,7 +84,7 @@ AABB Sphere::GetBoundingBox()const
 void Sphere::GetSphereUV(const Point& p, double& u, double& v)
 {
 	auto theta = acos(-p.y);
-	auto phi = atan2(-p.z, p.x + pi);
+	auto phi = atan2(-p.z, p.x) + pi;
 	u = phi / (2 * pi);
 	v = theta / pi;
 }

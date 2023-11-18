@@ -27,9 +27,9 @@ inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 	b = LinearToGamma(b);
 
 	static const Interval intensity(0.000, 0.999);
-	out << static_cast<int>(255.999 * intensity.clamp(r)) << ' '
-		<< static_cast<int>(255.999 * intensity.clamp(g)) << ' '
-		<< static_cast<int>(255.999 * intensity.clamp(b)) << "\n";
+	out << static_cast<int>(255.999 * intensity.Clamp(r)) << ' '
+		<< static_cast<int>(255.999 * intensity.Clamp(g)) << ' '
+		<< static_cast<int>(255.999 * intensity.Clamp(b)) << "\n";
 }
 
 inline Color RayColor(const Ray& r, ShapeContainer& shapes, int max_depth) 

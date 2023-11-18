@@ -17,6 +17,7 @@ private:
 	void SetUpOutputFile();
 	void SetUpRandomBallScene();
 	void SetUpSphereScene();
+	void SetUpEarthScene();
 	void SetCameraFocusValues(float defocus_angle, float focus_distance);
 	void AddSphere(float rad, Point pos, Color col);
 	void AddMetal(float rad,float fuzz, Point pos, Color col);
@@ -32,7 +33,7 @@ private:
 	ShapeContainer shapes;
 	int sample_count;
 	AABB shape_box;
-	int scene = 2;
+	int scene = 3;
 };
 #endif
 

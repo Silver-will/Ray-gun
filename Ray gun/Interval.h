@@ -10,11 +10,13 @@ struct Interval
 	Interval(double _min, double _max);
 	Interval(const Interval& a, const Interval& b);
 
-	bool contains(double x) const;
-	bool surrounds(double x) const;
+	bool Contains(double x) const;
+	bool Surrounds(double x) const;
 
-	double clamp(double x) const;
+	double Clamp(double x) const;
+	double Size() const;
 
+	Interval Expand(double delta)const;
 	static const Interval empty, universe;
 };
 

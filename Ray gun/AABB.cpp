@@ -41,3 +41,13 @@ bool AABB::Hit(const Ray& r, Interval ray_t)const
 	}
 	return true;
 }
+
+AABB AABB::Pad()
+{
+	double delta = 0.0001;
+	Interval new_x = (x.Size() >= delta) ? x : x.expand(delta);
+	Interval new_y = (y.Size() >= delta) ? y : y.expand(delta);
+	Interval new_z = (z.Size() >= delta) ? z : z.expand(delta);
+
+	return aabb(new_x, new_y, new_z);
+}

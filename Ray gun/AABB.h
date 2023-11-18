@@ -10,6 +10,7 @@ struct AABB
 	AABB(Interval X, Interval Y, Interval Z) :x{ X }, y{ Y }, z{ Z } {}
 	AABB(const Point& a,const Point& b);
 	AABB(const AABB& a, const AABB& b);
+	AABB Pad();
 
 	const Interval& axis(int n) const;
 	bool Hit(const Ray& r, Interval ray_t)const;

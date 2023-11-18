@@ -48,12 +48,18 @@ Color ImageTexture::Value(double u, double v, const Point& p)const
 	if(image.GetHeight() <= 0)
 		return Color(0,1,1);
 	// Clamp input texture coordinates to [0,1] x [1,0]
-	u = Interval(0,1).clamp	(u);
-	v =	1.0 - Interval(0,1).clamp(v);
+	u = Interval(0,1).Clamp	(u);
+	v =	1.0 - Interval(0,1).Clamp(v);
 	// Flip V to image coordinates
 	auto i = static_cast<int>(u * image.GetWidth());
 	auto j = static_cast<int>(v * image.GetHeight());
 	auto pixel = image.PixelData(i, j);
 	auto color_scale = 1.0/255.0;
 	return Color(color_scale * pixel[0], color_scale * pixel[1], color_scale * pixel[2]);
+}
+
+Color NoiseTexture::Value(double u, double v, const Point & p)const
+{
+	auto s = (float)scale * p;
+	return Color(1, 1, 1) * 0.5f * (1.0f + sinf(s.z + 10.0f * noise.Turb(s)));
 }
