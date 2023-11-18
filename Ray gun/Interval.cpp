@@ -17,19 +17,30 @@ Interval::Interval(double _min, double _max)
 
 }
 
-bool Interval::contains(double x) const
+bool Interval::Contains(double x) const
 {
 	return min <= x && x <= max;
 }
 
-bool Interval::surrounds(double x) const
+bool Interval::Surrounds(double x) const
 {
 	return min < x && x < max;
 }
 
-double Interval::clamp(double x) const
+double Interval::Clamp(double x) const
 {
 	if (x < min)return min;
 	if (x > max)return max;
 	return x;
+}
+
+double Interval::Size() const
+{
+	return max - min;
+}
+
+Interval Interval::Expand(double delta)const
+{
+	auto padding = delta / 2;
+	return Interval(min - padding, max + padding);
 }

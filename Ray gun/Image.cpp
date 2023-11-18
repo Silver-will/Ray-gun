@@ -23,6 +23,10 @@ Image::Image(uint16_t width, double aspectRatio)
 		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
 		SetUpSphereScene();
 		break;
+	case 3:
+		SetCameraFocusValues(0, 10.0);
+		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
+		SetUpEarthScene();
 	default:
 		break;
 	}
@@ -102,6 +106,8 @@ void Image::SetUpSphereScene()
 	auto checker = std::make_shared<CheckerTexture>(0.32, Color(.2, .3, .1), Color(.9));
 	AddLambder(10.0f, Point(0, -10, -1.0), checker);
 	AddLambder(10.0f, Point(0, 10, -1.0), checker);
+	auto volumes = std::make_shared<BVH_Node>(shapes);
+	shapes = ShapeContainer(1, volumes);
 
 }
 
@@ -159,5 +165,8 @@ void Image::SetCameraFocusValues(float defocus_angle, float focus_distance)
 
 void Image::SetUpEarthScene()
 {
-
+	auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
+	AddLambder(2.0 , Point(0), earthTex);
+	auto volumes = std::make_shared<BVH_Node>(shapes);
+	shapes = ShapeContainer(1, volumes);
 }

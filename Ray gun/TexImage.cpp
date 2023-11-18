@@ -1,23 +1,23 @@
-#include "ImageLoader.h"
+#include "TexImage.h"
+#include "STB.h"
 #include<iostream>
-using namespace std::string_literals;
-ImageLoader::ImageLoader():data(nullptr)
+#include<filesystem>
+
+TexImage::TexImage():data(nullptr)
 {
 
 }
 
-ImageLoader::~ImageLoader()
+TexImage::~TexImage()
 {
 	STBI_FREE(data);
 }
 
-ImageLoader::ImageLoader(const char* filename)
+TexImage::TexImage(const char* filename)
 {
-	auto filename = std::string(filename);
-	auto imagedir = getenv("Images");
-	
-	if(imagedir && Load(std::string(imagedir) +"/"+ filename))
-		return;
+	auto currentDir = std::filesystem::current_path();
+	std::cout << currentDir.string() + "\\Images\\" + filename << std::endl;
+	if(Load(currentDir.string() + "\\Images\\" + filename))return;
 	if(Load(filename))return;
 	if(Load("images/"s + filename) )return;
 	if(Load("../images/"s + filename))return;
@@ -27,28 +27,31 @@ ImageLoader::ImageLoader(const char* filename)
 	if(Load("../../../../../images/"s + filename))return;
 	if(Load("../../../../../../images/"s + filename))return;
 	std::cerr <<"ERROR: Could not load image file '"<< filename <<"'.\n";
+	
 }
 
-bool ImageLoader::Load(std::string filename)
+bool TexImage::Load(std::string filename)
 {
 	auto n = bytesPerPixel;
 	data = stbi_load(filename.c_str(), &imageWidth, &imageHeight, &n, bytesPerPixel);
+	if (data == nullptr)
+		std::cout << "Failed" << std::endl;
 	bytesPerScanline = imageWidth * bytesPerPixel;
 	return data != nullptr;
 
 }
 
-int ImageLoader::GetWidth()const 
+int TexImage::GetWidth()const 
 {
 	return (data == nullptr) ? 0 : imageWidth;
 }
 
-int ImageLoader::GetHeight()const
+int TexImage::GetHeight()const
 {
 	return (data == nullptr) ? 0 : imageHeight;
 }
 
-const unsigned char* ImageLoader::PixeLData(int x, int y) const
+const unsigned char* TexImage::PixelData(int x, int y) const
 {
 	static unsigned char magenta[] = {255,0,255};
 	if (data == nullptr)
@@ -58,9 +61,9 @@ const unsigned char* ImageLoader::PixeLData(int x, int y) const
 	return data + y * bytesPerScanline + x * bytesPerPixel;
 }
 
-int ImageLoader::Clamp(int x, int low, int high)
+int TexImage::Clamp(int x, int low, int high)
 {
 	if (x < low) return low;
-	if (x >= high) return high - 1;
-	return x;
+	if (x < high) return x;
+	return high - 1;
 }

@@ -1,23 +1,19 @@
-#ifndef IMAGE_LOADER_H
-#define IMAGE_LOADER_H
-
-#ifdef _MSC_VER
-	#pragma warning(push,0); 
-#endif
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_FAILURE_USERMSG
-#include <stb_image.h>
+#ifndef TEXIMAGE_H
+#define TEXIMAGE_H
 
 #include<string>
-struct ImageLoader
+#include<iostream>
+using namespace std::string_literals;
+
+struct TexImage
 {
-	ImageLoader();
-	ImageLoader(const char* filename);
-	~ImageLoader();
+	TexImage();
+	TexImage(const char* filename);
+	~TexImage();
 	bool Load(const std::string filename);
 	int GetWidth() const;
 	int GetHeight()const;
-	const unsigned char* PixeLData(int x, int y)const;
+	const unsigned char* PixelData(int x, int y)const;
 
 private:
 	const int bytesPerPixel = 3;
@@ -28,8 +24,6 @@ private:
 	static int Clamp(int x, int low, int high);
 };
 
-#ifdef _MSC_VER
-	#pragma warning (pop)
-#endif
+
 #endif
 

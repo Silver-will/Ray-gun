@@ -1,7 +1,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 #include"Typedefs.h"
-#include"Texture.h"
+#include"TexImage.h"
+#include"Perlin.h"
 #include<memory>
 #include<utility>
 
@@ -37,7 +38,22 @@ private:
 struct ImageTexture : public Texture
 {
 	ImageTexture(const char* filename);
+	Color Value(double u, double v, const Point& p)const override;
 
+private:
+	TexImage image;
+};
+
+struct NoiseTexture : public Texture
+{
+	NoiseTexture() {}
+
+	NoiseTexture(double sc) : scale(sc) {}
+	Color Value(double u, double v, const Point& p)const override;
+
+private:
+	Perlin noise;
+	double scale;
 };
 #endif
 
