@@ -13,6 +13,6 @@ struct HitRecord
 	double u;
 	double v;
 	bool frontFace;
-	void setFaceNormal(const Ray& r, const glm::vec3& outward);
+	void SetFaceNormal(const Ray& r, const glm::vec3& outward);
 };
 #endif

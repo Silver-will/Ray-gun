@@ -41,6 +41,7 @@ inline Color RayColor(const Ray& r, ShapeContainer& shapes, int max_depth)
 	{
 		Ray scattered;
 		Color attenuation;
+		
 		if (rec.mat->Scatter(r, rec, attenuation, scattered))
 		{
 			return attenuation * RayColor(scattered, shapes, max_depth - 1);

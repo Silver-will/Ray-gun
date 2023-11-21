@@ -142,6 +142,7 @@
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Perlin.cpp" />
+    <ClCompile Include="Quad.cpp" />
     <ClCompile Include="TexImage.cpp" />
     <ClCompile Include="Interval.cpp" />
     <ClCompile Include="main.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Perlin.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="STB.h" />
     <ClInclude Include="TexImage.h" />
     <ClInclude Include="Interval.h" />

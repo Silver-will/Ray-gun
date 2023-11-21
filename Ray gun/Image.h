@@ -18,10 +18,13 @@ private:
 	void SetUpRandomBallScene();
 	void SetUpSphereScene();
 	void SetUpEarthScene();
+	void SetUpNoiseScene();
+	void SetUpQuads();
 	void SetCameraFocusValues(float defocus_angle, float focus_distance);
 	void AddSphere(float rad, Point pos, Color col);
 	void AddMetal(float rad,float fuzz, Point pos, Color col);
 	void AddLambder(float rad, Point pos, std::shared_ptr<Texture> col);
+	void AddLambderQuad(Point Q, Point U,Point V, Color col);
 	void AddLambder(float rad, Point pos, Point pos2, Color col);
 	void AddDielectric(float rad, Point pos, double refractive_index);
 	AABB GetShapeBox();
@@ -33,7 +36,7 @@ private:
 	ShapeContainer shapes;
 	int sample_count;
 	AABB shape_box;
-	int scene = 3;
+	int scene = 5;
 };
 #endif
 

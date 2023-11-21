@@ -2,6 +2,11 @@
 #include "Hit.h"
 #include<iostream>
 
+Color Material::Emitted(double u, double v, const Point& p)
+{
+	return Color(0);
+}
+
 Lambertian::Lambertian(const Color& a) : albedo(std::make_shared<SolidColor>(a))
 {
 
@@ -65,4 +70,9 @@ double Dielectric::reflectance(double cosine, double ref_idx)
 	auto r0 = (1 - ref_idx) / (1 + ref_idx);
 	r0 = r0 * r0;
 	return r0 + (1 - r0) * pow((1 - cosine), 5);
+}
+
+DiffuseLight::DiffuseLight(std::shared_ptr<Texture> a) : emit{a}
+{
+
 }
