@@ -42,7 +42,7 @@ double Perlin::Noise(const Point& p) const
     return PerlinInterp(c, u, v, w);
 }
 
-double Perlin::Turb(const Point& p, int depth = 7)const
+double Perlin::Turb(const Point& p, int depth)const
 {
     auto accum = 0.0;
     auto temp_p = p;

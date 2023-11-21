@@ -2,6 +2,7 @@
 #include "Color.h"
 #include "Material.h"
 #include "BVH.h"
+#include "Quad.h"
 
 #include<chrono>
 using namespace std::literals;
@@ -27,6 +28,17 @@ Image::Image(uint16_t width, double aspectRatio)
 		SetCameraFocusValues(0, 10.0);
 		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
 		SetUpEarthScene();
+	case 4:
+		SetCameraFocusValues(0, 10.0);
+		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
+		SetUpNoiseScene();
+	case 5:
+		SetCameraFocusValues(0, 10.0);
+		cam.setCameraAngle(Point(0, 0, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
+		SetUpQuads();
+		std::cout<<shapes[0].get()->GetBoundingBox().x.min<<std::endl;
+		std::cout << shapes[1].get()->GetBoundingBox().x.min << std::endl;
+		std::cout << shapes[0].get()->GetBoundingBox().x.max << std::endl;
 	default:
 		break;
 	}
@@ -63,6 +75,14 @@ void Image::AddLambder(float rad, Point pos, Point pos2, Color col)
 {
 	auto lambder = std::make_shared<Lambertian>(col);
 	shapes.emplace_back(std::make_shared<Sphere>(pos,pos2, rad, lambder));
+	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
+}
+
+
+void Image::AddLambderQuad(Point Q, Point U, Point V, Color col)
+{
+	auto lambder = std::make_shared<Lambertian>(col);
+	shapes.emplace_back(std::make_shared<Quad>(Q, U, V, lambder));
 	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
 }
 
@@ -169,4 +189,28 @@ void Image::SetUpEarthScene()
 	AddLambder(2.0 , Point(0), earthTex);
 	auto volumes = std::make_shared<BVH_Node>(shapes);
 	shapes = ShapeContainer(1, volumes);
+}
+
+void Image::SetUpNoiseScene()
+{
+	auto Noise = std::make_shared<NoiseTexture>(4);
+	AddLambder(1000.0f, Point(0, -1000, -1.0), Noise);
+	AddLambder(2.0f, Point(0, 2, 0), Noise);
+	auto volumes = std::make_shared<BVH_Node>(shapes);
+	shapes = ShapeContainer(1, volumes);
+}
+
+void Image::SetUpQuads()
+{ 
+	auto leftRed = Color(1, 0, 0);
+	auto backGreen = Color(0, 1, 0);
+	auto rightBlue = Color(0, 0, 1);
+	auto upperOrange = Color(1, 0.5, 0);
+	auto lowerTeal = Color (0.2, 0.8, 0.8);
+
+	AddLambderQuad(Point(-3, -2, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed);
+	AddLambderQuad(Point(-2, -2, 0), Point(4, 0, 0), Point(0, 4, 0), backGreen);
+	AddLambderQuad(Point(3, -2, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue);
+	AddLambderQuad(Point(-2, 3, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange);
+	AddLambderQuad(Point(-2, -3, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal);
 }
