@@ -76,3 +76,35 @@ DiffuseLight::DiffuseLight(std::shared_ptr<Texture> a) : emit{a}
 {
 
 }
+
+DiffuseLight::DiffuseLight(Color c) : emit{std::make_shared<SolidColor>(c)}
+{
+
+}
+
+bool DiffuseLight::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const
+{
+	return false;
+}
+
+Color DiffuseLight::Emitted(double u, double v, const Point& p)
+{
+	return emit->Value(u, v, p);
+}
+
+Isotropic::Isotropic(Color c) : albedo{std::make_shared<SolidColor>(c)}
+{
+
+}
+
+Isotropic::Isotropic(std::shared_ptr<Texture> a) : albedo{a}
+{
+
+}
+
+bool Isotropic::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const
+{
+	scattered = Ray(rec.p, RandomUnitVector(), r_in.GetTime());
+	attenuation = albedo->Value(rec.u, rec.v, rec.p);
+	return true;
+}

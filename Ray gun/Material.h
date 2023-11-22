@@ -48,5 +48,14 @@ struct DiffuseLight : public Material {
 private:
 	std::shared_ptr<Texture> emit;
 };
+
+struct Isotropic : public Material {
+	Isotropic(Color c);
+	Isotropic(std::shared_ptr<Texture> a);
+	bool Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const override;
+
+private:
+	std::shared_ptr<Texture> albedo;
+};
 #endif // !MATERIAL_H
 

@@ -35,22 +35,22 @@ inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 inline Color RayColor(const Ray& r, ShapeContainer& shapes, int max_depth) 
 {
 	HitRecord rec;
+	static Color background(0);
 	if (max_depth <= 0)
 		return Color(0.0f);
-	if (WorldHit(r, shapes, Interval(0.001, Common::infinity), rec))
+	if (!WorldHit(r, shapes, Interval(0.001, Common::infinity), rec))
+		return background;
+	Ray scattered;
+	Color attenuation;
+	Color FromEmission = rec.mat->Emitted(rec.u, rec.v, rec.p);
+	if (!rec.mat->Scatter(r, rec, attenuation, scattered))
 	{
-		Ray scattered;
-		Color attenuation;
-		
-		if (rec.mat->Scatter(r, rec, attenuation, scattered))
-		{
-			return attenuation * RayColor(scattered, shapes, max_depth - 1);
-		}
-		return Color(0.0f);
+		return FromEmission;
 	}
-	glm::vec3 direct = glm::normalize(r.GetDirection());
-	float a = 0.5f * (direct.y + 1.0f);
-	return (1.0f - a) * glm::vec3(1.0, 1.0, 1.0) + (a * glm::vec3(0.5, 0.7, 1.0));
+
+	Color ColorFromScatter = attenuation * RayColor(scattered, shapes, max_depth - 1);
+	
+	return ColorFromScatter + FromEmission;
 }
 
 #endif

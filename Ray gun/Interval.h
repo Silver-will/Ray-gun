@@ -18,9 +18,11 @@ struct Interval
 
 	Interval Expand(double delta)const;
 	static const Interval empty, universe;
+	Interval operator+(double displacement);
+	Interval operator+(Interval& lval);
 };
 
-const static Interval empty(infinity, -infinity);
-const static Interval universe(-infinity, infinity);
+const Interval  Interval::empty = Interval(infinity, -infinity);
+const Interval Interval::universe = Interval(-infinity, infinity);
 #endif
 
