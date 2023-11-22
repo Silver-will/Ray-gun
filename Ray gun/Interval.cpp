@@ -44,3 +44,8 @@ Interval Interval::Expand(double delta)const
 	auto padding = delta / 2;
 	return Interval(min - padding, max + padding);
 }
+
+Interval Interval::operator+(double displacement)
+{
+	return Interval(min + displacement, max + displacement);
+}
