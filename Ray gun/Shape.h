@@ -36,6 +36,31 @@ private:
 	AABB BBox;
 };
 
+struct Translate : public Shape
+{
+	Translate(std::shared_ptr<Shape> s, const glm::vec3& displacement);
+	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
+	AABB GetBoundingBox()const override;
+
+private:
+	AABB box;
+	glm::vec3 offset;
+	std::shared_ptr<Shape> object;
+};
+
+struct RotateY : public Shape
+{
+	RotateY(std::shared_ptr<Shape> p, double angle);
+	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
+	AABB GetBoundingBox()const override;
+
+private:
+	AABB box;
+	float sin_theta;
+	float cos_theta;
+	std::shared_ptr<Shape> object;
+};
+
 using ShapeContainer = std::vector<std::shared_ptr<Shape>>;
 #endif
 

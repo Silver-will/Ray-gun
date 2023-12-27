@@ -37,7 +37,7 @@ void Camera::generate_viewport_variables(auto h, auto w)
 {
 	center = look_from;
 
-	auto theta = degress_to_radians(vfov);
+	auto theta = degrees_to_radians(vfov);
 	auto hi = tan(theta / 2);
 	viewport_height = 2.0f * hi * focus_dist;
 	viewport_width = viewport_height * (static_cast<float>(w) / h);
@@ -54,7 +54,7 @@ void Camera::generate_viewport_variables(auto h, auto w)
 
 	viewport_upper_left = center - (focus_dist * w_) - (viewport_u / 2.0f) - (viewport_v / 2.0f);
 
-	float defocus_radius = focus_dist * tan(degress_to_radians(defocus_angle / 2));
+	float defocus_radius = focus_dist * tan(degrees_to_radians(defocus_angle / 2));
 	defocus_disk_u = u_ * defocus_radius;
 	defocus_disk_v = v_ * defocus_radius;
 	pixel100_loc = viewport_upper_left + 0.5f * (pixel_delta_u + pixel_delta_v);

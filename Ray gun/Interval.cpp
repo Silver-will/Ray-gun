@@ -45,7 +45,11 @@ Interval Interval::Expand(double delta)const
 	return Interval(min - padding, max + padding);
 }
 
-Interval Interval::operator+(double displacement)
+Interval Interval::operator+(float displacement) const
 {
 	return Interval(min + displacement, max + displacement);
 }
+
+
+const Interval  Interval::empty = Interval(infinity, -infinity);
+const Interval Interval::universe = Interval(-infinity, infinity);
