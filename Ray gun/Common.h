@@ -11,7 +11,7 @@ namespace Common {
 	const double pi = 3.1415926535897932385;
 }
 
-inline double degress_to_radians(double degrees)
+inline double degrees_to_radians(double degrees)
 {
 	return degrees * Common::pi / 180.0;
 }

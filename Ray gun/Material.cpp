@@ -22,7 +22,6 @@ bool Lambertian::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuati
 	auto scatter_dir = rec.normal + RandomUnitVector();
 	if (IsVectorNearZero(scatter_dir))
 	{
-		std::cout << "z" << std::endl;
 		scatter_dir = rec.normal;
 	}
 	scattered = Ray(rec.p, scatter_dir,r_in.GetTime());

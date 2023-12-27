@@ -25,20 +25,25 @@ Image::Image(uint16_t width, double aspectRatio)
 		SetUpSphereScene();
 		break;
 	case 3:
-		SetCameraFocusValues(0, 10.0);
+		SetCameraFocusValues(0.6, 10.0);
 		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
 		SetUpEarthScene();
+		break;
 	case 4:
 		SetCameraFocusValues(0, 10.0);
 		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
 		SetUpNoiseScene();
+		break;
 	case 5:
 		SetCameraFocusValues(0, 10.0);
 		cam.setCameraAngle(Point(0, 0, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
 		SetUpQuads();
-		std::cout<<shapes[0].get()->GetBoundingBox().x.min<<std::endl;
-		std::cout << shapes[1].get()->GetBoundingBox().x.min << std::endl;
-		std::cout << shapes[0].get()->GetBoundingBox().x.max << std::endl;
+		break;
+	case 6:
+		SetCameraFocusValues(0, 10.0);
+		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
+		SetUpCornellBox();
+		break;
 	default:
 		break;
 	}
@@ -79,10 +84,9 @@ void Image::AddLambder(float rad, Point pos, Point pos2, Color col)
 }
 
 
-void Image::AddLambderQuad(Point Q, Point U, Point V, Color col)
+void Image::AddLambderQuad(Point Q, Point U, Point V, std::shared_ptr<Material> m)
 {
-	auto lambder = std::make_shared<Lambertian>(col);
-	shapes.emplace_back(std::make_shared<Quad>(Q, U, V, lambder));
+	shapes.emplace_back(std::make_shared<Quad>(Q, U, V, m));
 	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
 }
 
@@ -100,7 +104,7 @@ Image::~Image()
 
 void Image::PrintToFile()
 {
-	sample_count = 20;
+
 	image << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 	auto draw_start = std::chrono::steady_clock::now();
 	for (size_t j = 0; j < HEIGHT; j++)
@@ -112,7 +116,7 @@ void Image::PrintToFile()
 			for (size_t sample = 0; sample < sample_count; sample++)
 			{
 				auto ray = cam.GetRay(i, j);
-			    pixel_color += RayColor(ray, shapes, 8);
+			    pixel_color += RayColor(ray, shapes, 50);
 			}
 			WriteColor(image, pixel_color, sample_count);
 		}
@@ -202,15 +206,33 @@ void Image::SetUpNoiseScene()
 
 void Image::SetUpQuads()
 { 
-	auto leftRed = Color(1, 0, 0);
-	auto backGreen = Color(0, 1, 0);
-	auto rightBlue = Color(0, 0, 1);
-	auto upperOrange = Color(1, 0.5, 0);
-	auto lowerTeal = Color (0.2, 0.8, 0.8);
+	auto leftRed = std::make_shared<Lambertian>(Color(1, 0, 0));
+	auto backGreen = std::make_shared<Lambertian>(Color(0, 1, 0));
+	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
+	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
+	auto lowerTeal = std::make_shared<Lambertian>(Color (0.2, 0.8, 0.8));
 
 	AddLambderQuad(Point(-3, -2, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed);
 	AddLambderQuad(Point(-2, -2, 0), Point(4, 0, 0), Point(0, 4, 0), backGreen);
 	AddLambderQuad(Point(3, -2, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue);
 	AddLambderQuad(Point(-2, 3, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange);
 	AddLambderQuad(Point(-2, -3, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal);
+
+	auto volumes = std::make_shared<BVH_Node>(shapes);
+	shapes = ShapeContainer(1, volumes);
+}
+
+void Image::SetUpCornellBox()
+{
+	auto red = std::make_shared<Lambertian>(Color(.65, .05, .05));
+	auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+	auto light = std::make_shared<DiffuseLight>(Color(15,15,15));
+
+	AddLambderQuad(Point(555, 0, 0), Point(0,555,0), Point(0,0,555), green);
+	AddLambderQuad(Point(0, 0, 0), Point(0, 555, 0), Point(0, 0, 555), red);
+	AddLambderQuad(Point(343, 554,332), Point(-130, 0, 0), Point(0, 0, -105), light);
+	AddLambderQuad(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white);
+	AddLambderQuad(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white);
+	AddLambderQuad(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white);
 }

@@ -15,6 +15,8 @@ struct AABB
 	const Interval& axis(int n) const;
 	bool Hit(const Ray& r, Interval ray_t)const;
 };
+AABB operator+(const AABB& bbox, const glm::vec3& offset);
+AABB operator+(const glm::vec3& offset, const AABB& bbox);
 #endif
 
 
