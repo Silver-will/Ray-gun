@@ -1,6 +1,6 @@
 #ifndef QUAD_H
 #define QUAD_H
-#include "Shape.h"
+#include "ShapeList.h"
 #include "Typedefs.h"
 #include <glm/glm.hpp>
 struct Quad : public Shape
@@ -21,11 +21,11 @@ private:
 	glm::vec3 w;
 };
 
-inline ShapeContainer Box(const Point& a, const Point& b, std::shared_ptr<Material> mat)
+inline std::shared_ptr<ShapeList> Box(const Point& a, const Point& b, std::shared_ptr<Material> mat)
 {
     // Returns the 3D box (six sides) that contains the two opposite vertices a & b.
 
-    ShapeContainer sides;
+    auto sides = std::make_shared<ShapeList>();
 
     // Construct the two opposite vertices with the minimum and maximum coordinates.
     auto min = Point(fmin(a.x, b.x), fmin(a.y, b.y), fmin(a.z, b.z));
@@ -35,12 +35,12 @@ inline ShapeContainer Box(const Point& a, const Point& b, std::shared_ptr<Materi
     auto dy = glm::vec3(0, max.y - min.y, 0);
     auto dz = glm::vec3(0, 0, max.z - min.z);
 
-    sides.push_back(make_shared<Quad>(Point(min.x, min.y, max.z), dx, dy, mat)); // front
-    sides.push_back(make_shared<Quad>(Point(max.x, min.y, max.z), -dz, dy, mat)); // right
-    sides.push_back(make_shared<Quad>(Point(max.x, min.y, min.z), -dx, dy, mat)); // back
-    sides.push_back(make_shared<Quad>(Point(min.x, min.y, min.z), dz, dy, mat)); // left
-    sides.push_back(make_shared<Quad>(Point(min.x, max.y, max.z), dx, -dz, mat)); // top
-    sides.push_back(make_shared<Quad>(Point(min.x, min.y, min.z), dx, dz, mat)); // bottom
+    sides->Add(make_shared<Quad>(Point(min.x, min.y, max.z), dx, dy, mat)); // front
+    sides->Add(make_shared<Quad>(Point(max.x, min.y, max.z), -dz, dy, mat)); // right
+    sides->Add(make_shared<Quad>(Point(max.x, min.y, min.z), -dx, dy, mat)); // back
+    sides->Add(make_shared<Quad>(Point(min.x, min.y, min.z), dz, dy, mat)); // left
+    sides->Add(make_shared<Quad>(Point(min.x, max.y, max.z), dx, -dz, mat)); // top
+    sides->Add(make_shared<Quad>(Point(min.x, min.y, min.z), dx, dz, mat)); // bottom
 
     return sides;
 }

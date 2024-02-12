@@ -1,11 +1,12 @@
 #ifndef BVH_H
 #define BVH_H
-#include"Shape.h"
 #include"Typedefs.h"
+
+#include "ShapeList.h"
 
 struct BVH_Node : public Shape
 {
-	BVH_Node(ShapeContainer& shapes);
+	BVH_Node(ShapeList& shapes);
 	BVH_Node(const std::vector<std::shared_ptr<Shape>>& srcObjects, size_t start, size_t end);
 	static bool box_compare(const std::shared_ptr<Shape> a, const std::shared_ptr<Shape> b, int axisIndex);
 	static bool box_compare_X(const std::shared_ptr<Shape> a, const std::shared_ptr<Shape> b);

@@ -52,8 +52,8 @@ struct NoiseTexture : public Texture
 	Color Value(double u, double v, const Point& p)const override;
 
 private:
-	Perlin noise;
-	double scale;
+	Perlin noise{};
+	double scale{};
 };
 #endif
 

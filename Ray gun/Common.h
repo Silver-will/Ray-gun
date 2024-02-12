@@ -13,7 +13,7 @@ namespace Common {
 
 inline double degrees_to_radians(double degrees)
 {
-	return degrees * Common::pi / 180.0;
+	return degrees * (Common::pi / 180.0);
 }
 
 inline double random_double()

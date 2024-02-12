@@ -58,9 +58,7 @@ private:
 	AABB box;
 	float sin_theta;
 	float cos_theta;
-	std::shared_ptr<Shape> object;
+	std::shared_ptr<Shape>object;
 };
-
-using ShapeContainer = std::vector<std::shared_ptr<Shape>>;
 #endif
 
