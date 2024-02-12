@@ -1,5 +1,6 @@
 #include "Shape.h"
 #include "Material.h"
+#include "Color.h"
 #include<iostream>
 Sphere::Sphere(Point orig, float rad, Color col) : center{orig},
 	radius{rad}, color{col},isMoving{false}
@@ -94,6 +95,7 @@ Translate::Translate(std::shared_ptr<Shape> s, const glm::vec3& displacement)
 {
 }
 
+
 bool Translate::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
 {
 	Ray offset_r(r.GetOrigin() - offset, r.GetDirection(), r.GetTime());
@@ -112,7 +114,7 @@ AABB Translate::GetBoundingBox()const
 }
 
 
-RotateY::RotateY(std::shared_ptr<Shape> p, double angle) : 
+RotateY::RotateY(std::shared_ptr<Shape> p, double angle) :
 	object{p}
 {
 	auto radians = degrees_to_radians(angle);
@@ -142,6 +144,7 @@ RotateY::RotateY(std::shared_ptr<Shape> p, double angle) :
 			}
 		}
 	}
+
 
 	box = AABB(min, max);
 }
@@ -183,3 +186,4 @@ AABB RotateY::GetBoundingBox()const
 {
 	return box;
 }
+

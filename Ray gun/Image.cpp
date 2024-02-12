@@ -3,6 +3,8 @@
 #include "Material.h"
 #include "BVH.h"
 #include "Quad.h"
+#include "ShapeList.h"
+#include "ConstantMedium.h"
 
 #include<chrono>
 using namespace std::literals;
@@ -44,6 +46,15 @@ Image::Image(uint16_t width, double aspectRatio)
 		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
 		SetUpCornellBox();
 		break;
+	case 7:
+		SetCameraFocusValues(0, 6.0);
+		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
+		SetUpCornellSmoke();
+		break;
+	case 8:
+		SetCameraFocusValues(0, 6.0);
+		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
+		FinalScene();
 	default:
 		break;
 	}
@@ -55,46 +66,6 @@ void Image::SetUpOutputFile()
 {
 	std::string file = "./Render/Scene.ppm";
 	image.open(file, std::ofstream::out | std::ofstream::binary);
-}
-
-void Image::AddSphere(float rad, Point pos, Color col)
-{
-	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, col));
-}
-
-void Image::AddMetal(float rad, float fuzz, Point pos, Color col)
-{
-	auto metal = std::make_shared<Metal>(col,fuzz);
-	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, metal));
-	shape_box = AABB(shape_box,shapes.back()->GetBoundingBox());
-}
-
-void Image::AddLambder(float rad, Point pos, std::shared_ptr<Texture> col)
-{
-	auto lambder = std::make_shared<Lambertian>(col);
-	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, lambder));
-	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
-}
-
-void Image::AddLambder(float rad, Point pos, Point pos2, Color col)
-{
-	auto lambder = std::make_shared<Lambertian>(col);
-	shapes.emplace_back(std::make_shared<Sphere>(pos,pos2, rad, lambder));
-	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
-}
-
-
-void Image::AddLambderQuad(Point Q, Point U, Point V, std::shared_ptr<Material> m)
-{
-	shapes.emplace_back(std::make_shared<Quad>(Q, U, V, m));
-	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
-}
-
-void Image::AddDielectric(float rad, Point pos, double refractive_index)
-{
-	auto dielectric = std::make_shared<Dielectric>(refractive_index);
-	shapes.emplace_back(std::make_shared<Sphere>(pos, rad, dielectric));
-	shape_box = AABB(shape_box, shapes.back()->GetBoundingBox());
 }
 
 Image::~Image()
@@ -116,7 +87,7 @@ void Image::PrintToFile()
 			for (size_t sample = 0; sample < sample_count; sample++)
 			{
 				auto ray = cam.GetRay(i, j);
-			    pixel_color += RayColor(ray, shapes, 50);
+			    pixel_color += RayColor(ray, shapes, ray_depth);
 			}
 			WriteColor(image, pixel_color, sample_count);
 		}
@@ -127,18 +98,20 @@ void Image::PrintToFile()
 
 void Image::SetUpSphereScene()
 {
-	auto checker = std::make_shared<CheckerTexture>(0.32, Color(.2, .3, .1), Color(.9));
-	AddLambder(10.0f, Point(0, -10, -1.0), checker);
-	AddLambder(10.0f, Point(0, 10, -1.0), checker);
-	auto volumes = std::make_shared<BVH_Node>(shapes);
-	shapes = ShapeContainer(1, volumes);
+	auto checkerTex = std::make_shared<CheckerTexture>(0.32, Color(.2, .3, .1), Color(.9));
+	auto checker = std::make_shared<Lambertian>(checkerTex);
+	shapes.Add(std::make_shared<Sphere>(Point(0, -10, -1.0), 10.0f, checker));
+	shapes.Add(std::make_shared<Sphere>(Point(0, 10, -1.0), 10.0f, checker));
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 
 }
 
 void Image::SetUpRandomBallScene()
 {
-	auto checker = std::make_shared<CheckerTexture>(0.32, Color(.2,.3,.1),Color(.9));
-	AddLambder(1000.0f, Point(0, -1000, -1.0), checker);
+	auto checkerTex = std::make_shared<CheckerTexture>(0.32, Color(.2, .3, .1), Color(.9));
+	auto checker = std::make_shared<Lambertian>(checkerTex);
+
+	shapes.Add(std::make_shared<Sphere>(Point(0, -1000, -1.0), 1000.0f, checker));
 	for (int a = -11; a < 11; a++)
 	{
 		for (int b = -11; b < 11; b++)
@@ -152,28 +125,28 @@ void Image::SetUpRandomBallScene()
 				{
 					auto albedo = RandomVector() * RandomVector();
 					auto center2 = center + Point(0, random_double(0, .5), 0);
-					AddLambder(0.2f, center,center2, albedo);
+					shapes.Add(std::make_shared<Sphere>(center, center2, 0.2f, std::make_shared<Lambertian>(albedo)));
 				}
 				else if (choose_mat < 0.95)
 				{
 					auto albedo = RandomVector(0.5,1);
 					auto fuzz = random_double(0,0.5);
-					AddMetal(0.2f, fuzz, center, albedo);
+					auto metal = std::make_shared<Metal>(albedo,fuzz);
+					shapes.Add(std::make_shared<Sphere>(center, 0.2f, metal));
 				}
 				else
 				{
-					AddDielectric(0.2f, center, 1.5f);
+					auto dielectric = std::make_shared<Dielectric>(1.5f);
+					shapes.Add(std::make_shared<Sphere>(center, 0.2f, dielectric));
 				}
 			}
 		}
 	}
-	AddLambder(1.0f, Point(-4, 1, 0), checker);
-	AddDielectric(1.0f, Point(0, 1, 0), 1.5f);
-	AddMetal(1.0f, 0.0f, Point(4, 1, 0), Color(0.7, 0.6, 0.5));
-	
+	shapes.Add(std::make_shared<Sphere>(Point(-4, 1, 0), 1.0f, checker));
+	shapes.Add(std::make_shared<Sphere>(Point(0, 1, 0), 1.0f, std::make_shared<Dielectric>(1.5f)));
+	shapes.Add(std::make_shared<Sphere>(Point(4, 1, 0), 1.0f, std::make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0f)));
 
-	auto volumes = std::make_shared<BVH_Node>(shapes);
-	shapes = ShapeContainer(1,volumes);
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 AABB Image::GetShapeBox()
@@ -190,18 +163,19 @@ void Image::SetCameraFocusValues(float defocus_angle, float focus_distance)
 void Image::SetUpEarthScene()
 {
 	auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
-	AddLambder(2.0 , Point(0), earthTex);
-	auto volumes = std::make_shared<BVH_Node>(shapes);
-	shapes = ShapeContainer(1, volumes);
+	
+	shapes.Add(std::make_shared<Sphere>(Point(0), 2.0f, std::make_shared<Lambertian>(earthTex)));
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::SetUpNoiseScene()
 {
-	auto Noise = std::make_shared<NoiseTexture>(4);
-	AddLambder(1000.0f, Point(0, -1000, -1.0), Noise);
-	AddLambder(2.0f, Point(0, 2, 0), Noise);
-	auto volumes = std::make_shared<BVH_Node>(shapes);
-	shapes = ShapeContainer(1, volumes);
+	auto NoiseTex = std::make_shared<NoiseTexture>(4);
+	auto Noise = std::make_shared<Lambertian>(NoiseTex);
+	shapes.Add(std::make_shared<Sphere>(Point(0, -1000, -1.0), 1000.0f, Noise));
+	shapes.Add(std::make_shared<Sphere>(Point(0, 2, 0), 2.0f, Noise));
+
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::SetUpQuads()
@@ -212,14 +186,14 @@ void Image::SetUpQuads()
 	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
 	auto lowerTeal = std::make_shared<Lambertian>(Color (0.2, 0.8, 0.8));
 
-	AddLambderQuad(Point(-3, -2, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed);
-	AddLambderQuad(Point(-2, -2, 0), Point(4, 0, 0), Point(0, 4, 0), backGreen);
-	AddLambderQuad(Point(3, -2, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue);
-	AddLambderQuad(Point(-2, 3, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange);
-	AddLambderQuad(Point(-2, -3, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal);
 
-	auto volumes = std::make_shared<BVH_Node>(shapes);
-	shapes = ShapeContainer(1, volumes);
+	shapes.Add(std::make_shared<Quad>(Point(-3, -2, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed));
+	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 0), Point(4, 0, 0), Point(0, 4, 0), backGreen));
+	shapes.Add(std::make_shared<Quad>(Point(3, -2, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue));
+	shapes.Add(std::make_shared<Quad>(Point(-2, 3, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange));
+	shapes.Add(std::make_shared<Quad>(Point(-2, -3, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::SetUpCornellBox()
@@ -229,10 +203,109 @@ void Image::SetUpCornellBox()
 	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
 	auto light = std::make_shared<DiffuseLight>(Color(15,15,15));
 
-	AddLambderQuad(Point(555, 0, 0), Point(0,555,0), Point(0,0,555), green);
-	AddLambderQuad(Point(0, 0, 0), Point(0, 555, 0), Point(0, 0, 555), red);
-	AddLambderQuad(Point(343, 554,332), Point(-130, 0, 0), Point(0, 0, -105), light);
-	AddLambderQuad(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white);
-	AddLambderQuad(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white);
-	AddLambderQuad(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white);
+
+	shapes.Add(std::make_shared<Quad>(Point(555, 0, 0), Point(0, 555, 0), Point(0, 0, 555), green));
+	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(0, 555, 0), Point(0, 0, 555), red));
+	shapes.Add(std::make_shared<Quad>(Point(343, 554, 332), Point(-130, 0, 0), Point(0, 0, -105), light));
+	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
+	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
+	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
+
+	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
+	box1 = std::make_shared<RotateY>(box1, 15);
+	box1 = std::make_shared<Translate>(box1, Point(265, 0, 295));
+	shapes.Add(box1);
+
+	std::shared_ptr<Shape> box2 = Box(Point(0), Point(165, 165, 165), white);
+	box2 = std::make_shared<RotateY>(box2, -18);
+	box2 = std::make_shared<Translate>(box2, Point(130, 0, 65));
+	shapes.Add(box2);
+	
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
+}
+
+void Image::SetUpCornellSmoke()
+{
+	auto red = std::make_shared<Lambertian>(Color(.65, .05, .05));
+	auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+	auto light = std::make_shared<DiffuseLight>(Color(50, 50, 50));
+
+
+	shapes.Add(std::make_shared<Quad>(Point(555, 0, 0), Point(0, 555, 0), Point(0, 0, 555), green));
+	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(0, 555, 0), Point(0, 0, 555), red));
+	shapes.Add(std::make_shared<Quad>(Point(113, 554, 127), Point(330, 0, 0), Point(0, 0, 305), light));
+	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
+	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
+	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
+	
+	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
+	box1 = std::make_shared<RotateY>(box1, 15);
+	box1 = std::make_shared<Translate>(box1, Point(265,0,295));
+
+	std::shared_ptr<Shape> box2 = Box(Point(0), Point(165, 165, 165), white);
+	box2 = std::make_shared<RotateY>(box2, -18);
+	box2 = std::make_shared<Translate>(box2, Point(130,0,65));
+
+	shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
+	shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
+}
+
+void Image::FinalScene()
+{
+	auto ground = std::make_shared<Lambertian>(Color(0.48, 0.83, 0.53));
+
+	ShapeList boxes1;
+	int boxes_per_side = 20;
+	for (int i = 0; i < boxes_per_side; i++) {
+		for (int j = 0; j < boxes_per_side; j++) {
+			auto w = 100.0;
+			auto x0 = -1000.0 + i * w;
+			auto z0 = -1000.0 + j * w;
+			auto y0 = 0.0;
+			auto x1 = x0 + w;
+			auto y1 = random_double(1, 101);
+			auto z1 = z0 + w;
+
+			boxes1.Add(Box(Point(x0, y0, z0), Point(x1, y1, z1), ground));
+		}
+	}
+
+	shapes.Add(std::make_shared<BVH_Node>(boxes1));
+
+	auto light = std::make_shared<DiffuseLight>(Color(7, 7, 7));
+	shapes.Add(make_shared<Quad>(Point(123, 554, 147), Point(300, 0, 0), Point(0, 0, 265), light));
+
+	auto center1 = Point(400, 400, 200);
+	auto center2 = center1 + glm::vec3(30, 0, 0);
+	auto sphere_material = std::make_shared<Lambertian>(Color(0.7, 0.3, 0.1));
+	shapes.Add(std::make_shared<Sphere>(center1, center2, 50, sphere_material));
+
+	shapes.Add(std::make_shared<Sphere>(Point(260, 150, 45), 50, std::make_shared<Dielectric>(1.5)));
+	shapes.Add(std::make_shared<Sphere>(Point(0, 150, 145), 50, std::make_shared<Metal>(Color(0.8, 0.8, 0.9), 1.0)));
+
+	auto boundary = std::make_shared<Sphere>(Point(360, 150, 145), 70, std::make_shared<Dielectric>(1.5));
+	shapes.Add(boundary);
+	shapes.Add(std::make_shared<ConstantMedium>(boundary, 0.2, Color(0.2, 0.4, 0.9)));
+	boundary = std::make_shared<Sphere>(Point(0, 0, 0), 5000, std::make_shared<Dielectric>(1.5));
+	shapes.Add(std::make_shared<ConstantMedium>(boundary, .0001, Color(1, 1, 1)));
+
+	auto emat = std::make_shared<Lambertian>(std::make_shared<ImageTexture>("earthmap.jpg"));
+	shapes.Add(std::make_shared<Sphere>(Point(400, 200, 400), 100, emat));
+	auto pertext = std::make_shared<NoiseTexture>(0.1);
+	shapes.Add(std::make_shared<Sphere>(Point(220, 280, 300), 80, std::make_shared<Lambertian>(pertext)));
+
+	ShapeList boxes2;
+	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+	int ns = 1000;
+	for (int j = 0; j < ns; j++) {
+		boxes2.Add(std::make_shared<Sphere>(RandomVector(0, 165), 10, white));
+	}
+
+	shapes.Add(std::make_shared<Translate>(make_shared<RotateY>(std::make_shared<BVH_Node>(boxes2), 15),
+		glm::vec3(-100, 270, 395)));
+
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }

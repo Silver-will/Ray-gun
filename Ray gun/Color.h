@@ -3,14 +3,11 @@
 #include<glm/glm.hpp>
 #include<iostream>
 #include<span>
-#include "Shape.h"
+#include "ShapeList.h"
 #include"Material.h"
 #include"Common.h"
+#include<fstream>
 
-
-
-void AnyHit(ShapeContainer& shapes, Ray& r, HitRecord& hit, const double& tMin, const double& tMax);
-bool WorldHit(const Ray& r, ShapeContainer& shapes, const Interval& ray_t, HitRecord& rec);
 inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 {
 	float scale = 1.0 / samples;
@@ -32,13 +29,14 @@ inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 		<< static_cast<int>(255.999 * intensity.Clamp(b)) << "\n";
 }
 
-inline Color RayColor(const Ray& r, ShapeContainer& shapes, int max_depth) 
+inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth) 
 {
 	HitRecord rec;
-	static Color background(0.7,0.8,1.0);
+	static Color background(0.0);
 	if (max_depth <= 0)
 		return Color(0.0f);
-	if (!WorldHit(r, shapes, Interval(0.001, Common::infinity), rec))
+		
+	if (!shapes.RayHit(r, rec, Interval(0.001, Common::infinity)))
 		return background;
 	Ray scattered;
 	Color attenuation;
@@ -51,6 +49,7 @@ inline Color RayColor(const Ray& r, ShapeContainer& shapes, int max_depth)
 	Color ColorFromScatter = attenuation * RayColor(scattered, shapes, max_depth - 1);
 	
 	return ColorFromScatter + FromEmission;
+	
 }
 
 #endif

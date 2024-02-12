@@ -138,12 +138,12 @@
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Color.cpp" />
     <ClCompile Include="ConstantMedium.cpp" />
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Perlin.cpp" />
     <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="ShapeList.cpp" />
     <ClCompile Include="TexImage.cpp" />
     <ClCompile Include="Interval.cpp" />
     <ClCompile Include="main.cpp" />
@@ -164,6 +164,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="Quad.h" />
+    <ClInclude Include="ShapeList.h" />
     <ClInclude Include="STB.h" />
     <ClInclude Include="TexImage.h" />
     <ClInclude Include="Interval.h" />

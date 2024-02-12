@@ -73,7 +73,7 @@ bool BVH_Node::box_compare_Z(const std::shared_ptr<Shape> a, const std::shared_p
 	return box_compare(a, b, 2);
 }
 
-BVH_Node::BVH_Node(ShapeContainer& shapes) : BVH_Node(shapes,0,shapes.size())
+BVH_Node::BVH_Node(ShapeList& shapes) : BVH_Node(shapes.objects,0,shapes.objects.size())
 {
 
 }
