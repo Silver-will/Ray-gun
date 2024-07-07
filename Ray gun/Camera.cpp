@@ -58,7 +58,6 @@ void Camera::generate_viewport_variables(auto h, auto w)
 	defocus_disk_u = u_ * defocus_radius;
 	defocus_disk_v = v_ * defocus_radius;
 	pixel100_loc = viewport_upper_left + 0.5f * (pixel_delta_u + pixel_delta_v);
-
 }
 
 glm::vec3 Camera::PixelSampleSquare() const

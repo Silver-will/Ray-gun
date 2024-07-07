@@ -6,6 +6,7 @@
 #include "ShapeList.h"
 #include "ConstantMedium.h"
 
+#include <execution>
 #include<chrono>
 using namespace std::literals;
 Image::Image(uint16_t width, double aspectRatio)
@@ -13,6 +14,14 @@ Image::Image(uint16_t width, double aspectRatio)
 	WIDTH = width;
 	auto h = static_cast<int>(WIDTH / aspectRatio);
 	HEIGHT = (h > 0) ? h : 1;
+	colors.resize(WIDTH * HEIGHT);
+	image_horizontal_iterator.resize(WIDTH);
+	image_vertical_iterator.resize(HEIGHT);
+	for (size_t i = 0; i < WIDTH; i++)
+		image_horizontal_iterator[i] = i;
+	for (size_t i = 0; i < HEIGHT; i++)
+		image_vertical_iterator[i] = i;
+
 	cam = Camera(HEIGHT, WIDTH);
 	switch (scene)
 	{
@@ -27,7 +36,7 @@ Image::Image(uint16_t width, double aspectRatio)
 		SetUpSphereScene();
 		break;
 	case 3:
-		SetCameraFocusValues(0.6, 10.0);
+		SetCameraFocusValues(0.6, 6.0);
 		cam.setCameraAngle(Point(13, 2, 3), Point(0, 0, 0), Point(0, 1, 0), 20.0);
 		SetUpEarthScene();
 		break;
@@ -78,9 +87,28 @@ void Image::PrintToFile()
 
 	image << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 	auto draw_start = std::chrono::steady_clock::now();
+
+#define MT 1
+#if MT
+	std::for_each(std::execution::par, image_vertical_iterator.begin(), image_vertical_iterator.end(), [this](size_t j)
+		{
+			std::for_each(std::execution::par, image_horizontal_iterator.begin(), image_horizontal_iterator.end(), [this, &j](size_t i)
+				{
+					//std::clog << "Lines left = " << HEIGHT - j << "\n";
+					Color pixel_color = Color(0.0f);
+					for (size_t sample = 0; sample < sample_count; sample++)
+					{
+						auto ray = cam.GetRay(i, j);
+						pixel_color += RayColor(ray, shapes, ray_depth);
+					}
+					colors[j * WIDTH + i] = pixel_color;
+				});
+		});
+	WriteColorOnce(image, sample_count, colors);
+#else
 	for (size_t j = 0; j < HEIGHT; j++)
 	{
-		std::cout << "Lines left = " << HEIGHT - j << "\n";
+		//std::clog << "Lines left = " << HEIGHT - j << "\n";
 		for (size_t i = 0; i < WIDTH; i++)
 		{
 			Color pixel_color = Color(0.0f);
@@ -92,8 +120,14 @@ void Image::PrintToFile()
 			WriteColor(image, pixel_color, sample_count);
 		}
 	}
+#endif
 	auto draw_end = std::chrono::steady_clock::now();
 	std::cout << "Total time taken: " << (draw_end - draw_start) / 1s <<" seconds" << std::endl;;
+}
+
+void Image::StoreColor(Color col, int x, int y)
+{
+	colors[y * WIDTH + x] = col;
 }
 
 void Image::SetUpSphereScene()
@@ -108,6 +142,9 @@ void Image::SetUpSphereScene()
 
 void Image::SetUpRandomBallScene()
 {
+	auto light = std::make_shared<DiffuseLight>(Color(50, 50, 50));
+	shapes.Add(make_shared<Quad>(Point(123, 554, 147), Point(300, 0, 0), Point(0, 0, 265), light));
+
 	auto checkerTex = std::make_shared<CheckerTexture>(0.32, Color(.2, .3, .1), Color(.9));
 	auto checker = std::make_shared<Lambertian>(checkerTex);
 
@@ -229,7 +266,7 @@ void Image::SetUpCornellSmoke()
 	auto red = std::make_shared<Lambertian>(Color(.65, .05, .05));
 	auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
 	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
-	auto light = std::make_shared<DiffuseLight>(Color(50, 50, 50));
+	auto light = std::make_shared<DiffuseLight>(Color(7, 7, 7));
 
 
 	shapes.Add(std::make_shared<Quad>(Point(555, 0, 0), Point(0, 555, 0), Point(0, 0, 555), green));
