@@ -73,9 +73,7 @@ inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth)
 	}
 
 	Color ColorFromScatter = attenuation * RayColor(scattered, shapes, max_depth - 1);
-	
 	return ColorFromScatter + FromEmission;
-	
 }
 
 #endif

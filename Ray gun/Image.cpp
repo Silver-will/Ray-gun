@@ -4,7 +4,9 @@
 #include "BVH.h"
 #include "Quad.h"
 #include "ShapeList.h"
+#include "Polygun.h"
 #include "ConstantMedium.h"
+#include "GLTFLoading.h"
 
 #include <execution>
 #include<chrono>
@@ -64,6 +66,10 @@ Image::Image(uint16_t width, double aspectRatio)
 		SetCameraFocusValues(0, 6.0);
 		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
 		FinalScene();
+	case 9:
+		SetCameraFocusValues(0, 6.0);
+		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
+		
 	default:
 		break;
 	}
@@ -88,7 +94,7 @@ void Image::PrintToFile()
 	image << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 	auto draw_start = std::chrono::steady_clock::now();
 
-#define MT 1
+#define MT 0
 #if MT
 	std::for_each(std::execution::par, image_vertical_iterator.begin(), image_vertical_iterator.end(), [this](size_t j)
 		{
@@ -275,6 +281,7 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
+	shapes.Add(std::make_shared	<Triangle>(Point(138,138,450), Point(207,276, 450), Point(276,138, 450),red));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
 	box1 = std::make_shared<RotateY>(box1, 15);
@@ -288,6 +295,11 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
 
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
+}
+
+void Image::SetUpGltfScene()
+{
+
 }
 
 void Image::FinalScene()
