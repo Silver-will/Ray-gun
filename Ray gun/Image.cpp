@@ -19,12 +19,16 @@ Image::Image(uint16_t width, double aspectRatio)
 	colors.resize(WIDTH * HEIGHT);
 	image_horizontal_iterator.resize(WIDTH);
 	image_vertical_iterator.resize(HEIGHT);
+
 	for (size_t i = 0; i < WIDTH; i++)
 		image_horizontal_iterator[i] = i;
 	for (size_t i = 0; i < HEIGHT; i++)
 		image_vertical_iterator[i] = i;
 
 	cam = Camera(HEIGHT, WIDTH);
+	sqrt_spp = std::sqrt(sample_count);
+	double recip_sqrt_spp = 1.0 / sqrt_spp;
+	cam.recip_sqrt_spp = recip_sqrt_spp;
 	switch (scene)
 	{
 	case 1:
@@ -94,7 +98,7 @@ void Image::PrintToFile()
 	image << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 	auto draw_start = std::chrono::steady_clock::now();
 
-#define MT 0
+#define MT 1
 #if MT
 	std::for_each(std::execution::par, image_vertical_iterator.begin(), image_vertical_iterator.end(), [this](size_t j)
 		{
@@ -102,10 +106,13 @@ void Image::PrintToFile()
 				{
 					//std::clog << "Lines left = " << HEIGHT - j << "\n";
 					Color pixel_color = Color(0.0f);
-					for (size_t sample = 0; sample < sample_count; sample++)
+					for (int s_j = 0; s_j < sqrt_spp; s_j++)
 					{
-						auto ray = cam.GetRay(i, j);
-						pixel_color += RayColor(ray, shapes, ray_depth);
+						for (int s_i = 0; s_i < sqrt_spp; s_i++)
+						{
+							auto ray = cam.GetRay(i, j, s_i, s_j);
+							pixel_color += RayColor(ray, shapes, ray_depth);
+						}
 					}
 					colors[j * WIDTH + i] = pixel_color;
 				});

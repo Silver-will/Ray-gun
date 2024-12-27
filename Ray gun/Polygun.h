@@ -32,6 +32,7 @@ private:
 struct Polygun
 {
 	Polygun(const std::vector<MeshData>& _geometry);
+	Polygun(std::string_view model_path, Point pos);
 	Color GetColor();
 	Point GetPos();
 	AABB GetBoundingBox()const;

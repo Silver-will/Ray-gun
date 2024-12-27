@@ -1,3 +1,5 @@
+#ifndef GLTF_LOADER
+#define GLTF_LOADER
 #include <filesystem>
 #include <optional>
 #include <vector>
@@ -6,6 +8,7 @@
 #include <fastgltf/glm_element_traits.hpp>
 #include <fastgltf/parser.hpp>
 #include <fastgltf/tools.hpp>
+#include <vector>
 #include "Typedefs.h"
 
 struct Vertex {
@@ -24,4 +27,6 @@ struct MeshData {
 	std::vector<uint32_t> indices;
 	std::vector<GeoSurface> surfaces;
 };
+
 std::optional<std::vector<MeshData>>LoadGLTF(std::filesystem::path filePath);
+#endif
