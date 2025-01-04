@@ -1,5 +1,9 @@
 #include "GLTFLoading.h"
 #include <print>
+#include <fastgltf/glm_element_traits.hpp>
+#include <fastgltf/parser.hpp>
+#include <fastgltf/tools.hpp>
+
 
 std::optional<std::vector<MeshData>>LoadGLTF(std::filesystem::path filePath)
 {

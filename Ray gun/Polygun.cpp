@@ -1,5 +1,38 @@
 #include "Polygun.h"
+#include "GLTFLoading.h"
 #include <array>
+
+
+Polygun::Polygun(std::string_view model_path, Point pos)
+{
+    auto model = LoadGLTF(model_path);
+    if (model.has_value())
+    {
+        this->geometry = model.value();
+    }
+    this->worldPos = pos;
+}
+
+Polygun::Polygun(const std::vector<MeshData>& _geometry)
+{
+    this->geometry = _geometry;
+}
+
+Point Polygun::GetPos()
+{
+    return worldPos;
+}
+
+void Polygun::AddToScene(ShapeList& shapes)
+{
+    for (int i = 0; i < geometry.size(); i++)
+    {
+        for (int j = 0; j < geometry[i].indices.size(); j++)
+        {
+
+        }
+    }
+}
 
 bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
 {

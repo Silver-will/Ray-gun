@@ -73,6 +73,7 @@ Image::Image(uint16_t width, double aspectRatio)
 	case 9:
 		SetCameraFocusValues(0, 6.0);
 		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
+		SetUpGltfScene();
 		
 	default:
 		break;
@@ -306,7 +307,15 @@ void Image::SetUpCornellSmoke()
 
 void Image::SetUpGltfScene()
 {
+	auto red = std::make_shared<Lambertian>(Color(.65, .05, .05));
+	auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+	auto light = std::make_shared<DiffuseLight>(Color(7, 7, 7));
 
+	Polygun model("monkey.glb",Point(10,10,4));
+
+	shapes.Add(std::make_shared<Sphere>(Point(4, 1, 0), 1.0f, std::make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0f)));
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::FinalScene()

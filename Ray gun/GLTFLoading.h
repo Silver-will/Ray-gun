@@ -5,9 +5,6 @@
 #include <vector>
 #include <memory>
 #include <iostream>
-#include <fastgltf/glm_element_traits.hpp>
-#include <fastgltf/parser.hpp>
-#include <fastgltf/tools.hpp>
 #include <vector>
 #include "Typedefs.h"
 

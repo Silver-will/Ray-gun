@@ -2,7 +2,7 @@
 #define POLYGUN_H
 #pragma once
 #include "GLTFLoading.h"
-#include "Shape.h"
+#include "ShapeList.h"
 #include "AABB.h"
 struct Triangle : public Shape
 {
@@ -33,14 +33,17 @@ struct Polygun
 {
 	Polygun(const std::vector<MeshData>& _geometry);
 	Polygun(std::string_view model_path, Point pos);
+	void AddToScene(ShapeList& shapes);
 	Color GetColor();
 	Point GetPos();
-	AABB GetBoundingBox()const;
 
 private:
 	std::vector<MeshData> geometry;
+	std::vector<float> vertices;
+	std::vector<float> indices;
 	AABB BBox;
 	std::shared_ptr<Material> mat;
+	Point worldPos;
 };
 #endif
 

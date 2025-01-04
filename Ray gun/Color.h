@@ -74,7 +74,7 @@ inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth)
 
 	double scattering_pdf = rec.mat->ScatteringPDF(r, rec, scattered);
 	double pdf = scattering_pdf;
-	Color ColorFromScatter = (attenuation * scattering_pdf * RayColor(scattered, shapes, max_depth - 1)) / pdf;
+	Color ColorFromScatter = (attenuation * (float)scattering_pdf * RayColor(scattered, shapes, max_depth - 1)) / (float)pdf;
 	return ColorFromScatter + FromEmission;
 }
 
