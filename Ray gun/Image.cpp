@@ -7,6 +7,8 @@
 #include "Polygun.h"
 #include "ConstantMedium.h"
 #include "GLTFLoading.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <execution>
 #include<chrono>
@@ -71,8 +73,8 @@ Image::Image(uint16_t width, double aspectRatio)
 		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
 		FinalScene();
 	case 9:
-		SetCameraFocusValues(0, 6.0);
-		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
+		SetCameraFocusValues(0, 10.0);
+		cam.setCameraAngle(Point(0, 0, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
 		SetUpGltfScene();
 		
 	default:
@@ -289,7 +291,25 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
-	shapes.Add(std::make_shared	<Triangle>(Point(138,138,450), Point(207,276, 450), Point(276,138, 450),red));
+
+	glm::mat4 transform = glm::mat4(1.0f);
+	//transform = glm::translate(transform, glm::vec3(-100,10,0.0f));
+	transform = glm::scale(transform, glm::vec3(1.0f,1.0f,1.0f));
+	auto v0 = Point(138, 138, 450);
+	auto v1 = Point(207, 276, 450);
+	auto v2 = Point(276, 0.1, 450);
+
+	Triangle tri(v0, v1, v2, red);
+	//tri.Translate(glm::vec3(100,0,0));
+
+	glm::vec4 e0 = transform * glm::vec4(v0, 1.0f);
+	glm::vec4 e1 = transform * glm::vec4(v1, 1.0f);
+	glm::vec4 e2 = transform * glm::vec4(v2, 1.0f);
+
+	//v0 = glm::vec3(e0);
+	//v1 = glm::vec3(e1);
+	//v2 = glm::vec3(e2);
+	shapes.Add(std::make_shared	<Triangle>(tri));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
 	box1 = std::make_shared<RotateY>(box1, 15);
@@ -299,23 +319,49 @@ void Image::SetUpCornellSmoke()
 	box2 = std::make_shared<RotateY>(box2, -18);
 	box2 = std::make_shared<Translate>(box2, Point(130,0,65));
 
-	shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
-	shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+	//shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
+	//shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
 
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::SetUpGltfScene()
 {
-	auto red = std::make_shared<Lambertian>(Color(.65, .05, .05));
-	auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
-	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
-	auto light = std::make_shared<DiffuseLight>(Color(7, 7, 7));
+	auto leftRed = std::make_shared<Lambertian>(Color(.65, .05, .05));
+	auto backGreen = std::make_shared<Lambertian>(Color(0, 1, 0));
+	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
+	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
+	auto lowerTeal = std::make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
+	auto light = std::make_shared<DiffuseLight>(Color(10, 10, 10));
 
-	Polygun model("monkey.glb",Point(10,10,4));
+	shapes.Add(std::make_shared<Sphere>(Point(-20, 50, -1), 45.0f, light));
+	shapes.Add(std::make_shared<Quad>(Point(-3, -2, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed));
+	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 0), Point(4, 0, 0), Point(0, 4, 0), backGreen));
+	shapes.Add(std::make_shared<Quad>(Point(3, -2, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue));
+	shapes.Add(std::make_shared<Quad>(Point(-2, 3, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange));
+	shapes.Add(std::make_shared<Quad>(Point(-2, -3, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
 
-	shapes.Add(std::make_shared<Sphere>(Point(4, 1, 0), 1.0f, std::make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0f)));
+	//glm::mat4 transform = glm::mat4(1.0f);
+	//transform = glm::translate(transform, glm::vec3(0.0f,0.0f,3.0f));
+	//transform = glm::scale(transform, glm::vec3(2.0f));
+	auto v2 = Point(0.5, 0.5, 1);
+	auto v1 = Point(1, 2, 1);
+	auto v0 = Point(2, 0.5, 1);
+
+	//glm::vec4 e0 = transform * glm::vec4(v0, 1.0f);
+	//glm::vec4 e1 = transform * glm::vec4(v1, 1.0f);
+	//glm::vec4 e2 = transform * glm::vec4(v2, 1.0f);
+
+	//v0 = glm::vec3(e0);
+	//v1 = glm::vec3(e1);
+	//v2 = glm::vec3(e2);
+
+	//Polygun model("assets/plane.glb",Point(10,10,4));
+	//model.AddToScene(shapes);
+	shapes.Add(std::make_shared<Triangle>(v0, v1, v2, leftRed));
+
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
+	
 }
 
 void Image::FinalScene()

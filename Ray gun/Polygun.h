@@ -15,13 +15,17 @@ struct Triangle : public Shape
 			fmax(v0.y, fmax(v1.y, v2.y)),
 			fmax(v0.z, fmax(v1.z, v2.z)));
 
-		BBox = AABB(min, max);
+		BBox = AABB(min, max).Pad();
 	}
+
+	Triangle(const Triangle& tri);
+	void Translate(const glm::vec3& direction);
+	void Scale(const glm::vec3& scale);
 	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
 	Color GetColor() override;
 	Point GetPos() override;
 	AABB GetBoundingBox()const override;
-private:
+
 	AABB BBox;
 	Point v0, v1, v2;
 	float u, v, t;

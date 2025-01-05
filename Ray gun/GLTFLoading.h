@@ -25,5 +25,5 @@ struct MeshData {
 	std::vector<GeoSurface> surfaces;
 };
 
-std::optional<std::vector<MeshData>>LoadGLTF(std::filesystem::path filePath);
+std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath);
 #endif

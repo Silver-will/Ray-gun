@@ -1,6 +1,9 @@
 #include "Polygun.h"
+#include "Material.h"
 #include "GLTFLoading.h"
 #include <array>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 Polygun::Polygun(std::string_view model_path, Point pos)
@@ -25,15 +28,66 @@ Point Polygun::GetPos()
 
 void Polygun::AddToScene(ShapeList& shapes)
 {
+    auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+
     for (int i = 0; i < geometry.size(); i++)
     {
-        for (int j = 0; j < geometry[i].indices.size(); j++)
+        for (int j = 0; j < geometry[i].indices.size(); j+=3)
         {
+            uint32_t i0 = geometry[i].indices[j];
+            uint32_t i1 = geometry[i].indices[j + 1];
+            uint32_t i2 = geometry[i].indices[j + 2];
 
+            auto v0 = geometry[i].vertices[i0].position;
+            auto v1 = geometry[i].vertices[i1].position;
+            auto v2 = geometry[i].vertices[i2].position;
+
+
+            glm::mat4 transform = glm::mat4(1.0f);
+            transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, -10.0f));
+
+            glm::vec4 e0 = transform * glm::vec4(v0, 1.0f);
+            glm::vec4 e1 = transform * glm::vec4(v1, 1.0f);
+            glm::vec4 e2 = transform * glm::vec4(v2, 1.0f);
+
+            //v0 = glm::vec3(e0);
+            //v1 = glm::vec3(e1);
+            //v2 = glm::vec3(e2);
+
+            //std::shared_ptr<Shape> triangle = std::make_shared<Triangle>(v0.position, v1.position, v2.position, green);
+            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, green));
+            //triangle = std::make_shared<RotateY>(triangle, 15);
+
+            //auto offset = Point(265, 0, 295);
+            //auto offset2 = offset * 1.5f;
+            //shapes.Add(triangle);
         }
     }
+    auto stuff = shapes.objects.size();
+    stuff += 2;
 }
 
+Triangle::Triangle(const Triangle& tri)
+{
+    this->v0 = tri.v0;
+    this->v1 = tri.v1;
+    this->v2 = tri.v2;
+
+    this->BBox = tri.BBox;
+    this->mat = tri.mat;
+}
+
+void Triangle::Translate(const glm::vec3& direction)
+{
+    v0 -= direction;
+    v1 -= direction;
+    v2 -= direction;
+}
+
+void Triangle::Scale(const glm::vec3& scale)
+{
+    v0 = Point(v0[0] * scale[0], v0[1] * scale[1], v0[2] * scale[2]);
+}
 bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
 {
     /*static constexpr float kEpsilon = 1e-8;
