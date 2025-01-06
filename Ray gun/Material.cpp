@@ -2,6 +2,11 @@
 #include "Hit.h"
 #include<iostream>
 
+double Material::ScatteringPDF(const Ray& r_in, const HitRecord& rec, const Ray& scattered)const
+{
+	return 0;
+}
+
 Color Material::Emitted(double u, double v, const Point& p)
 {
 	return Color(0);
@@ -27,6 +32,12 @@ bool Lambertian::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuati
 	scattered = Ray(rec.p, scatter_dir,r_in.GetTime());
 	attenuation = albedo->Value(rec.u,rec.v,rec.p);
 	return true;
+}
+
+double Lambertian::ScatteringPDF(const Ray& r_in, const HitRecord& rec, const Ray& scattered)const
+{
+	auto cos_theta = glm::dot(rec.normal, glm::normalize(scattered.GetDirection()));
+	return cos_theta < 0 ? 0 : cos_theta / pi;
 }
 
 Metal::Metal(const Color& a, float f) : albedo{ a },fuzz(f < 1 ? f : 1 )

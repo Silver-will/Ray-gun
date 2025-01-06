@@ -1,5 +1,5 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#ifndef SHAPE_H
+#define SHAPE_H
 #include"Ray.h"
 #include "Hit.h"
 #include"Interval.h"

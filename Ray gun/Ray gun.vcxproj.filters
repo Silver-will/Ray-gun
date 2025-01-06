@@ -66,6 +66,12 @@
     <ClCompile Include="ShapeList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Polygun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLTFLoading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h">
@@ -126,6 +132,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShapeList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Polygun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLTFLoading.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

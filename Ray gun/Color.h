@@ -8,8 +8,10 @@
 #include"Common.h"
 #include<fstream>
 
+
 inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 {
+
 	float scale = 1.0 / samples;
 	auto r = col.x;
 	auto g = col.y;
@@ -29,6 +31,30 @@ inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 		<< static_cast<int>(255.999 * intensity.Clamp(b)) << "\n";
 }
 
+inline void WriteColorOnce(std::ofstream& out, const int samples, std::vector<Color>& colors)
+{
+	float scale = 1.0 / samples;
+	const Interval intensity(0.000, 0.999);
+
+	for (auto& col : colors)
+	{
+		auto r = col.x;
+		auto g = col.y;
+		auto b = col.z;
+
+		r *= scale;
+		g *= scale;
+		b *= scale;
+
+		r = LinearToGamma(r);
+		g = LinearToGamma(g);
+		b = LinearToGamma(b);
+		out << static_cast<int>(255.999 * intensity.Clamp(r)) << ' '
+			<< static_cast<int>(255.999 * intensity.Clamp(g)) << ' '
+			<< static_cast<int>(255.999 * intensity.Clamp(b)) << "\n";
+	}
+}
+
 inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth) 
 {
 	HitRecord rec;
@@ -46,10 +72,10 @@ inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth)
 		return FromEmission;
 	}
 
-	Color ColorFromScatter = attenuation * RayColor(scattered, shapes, max_depth - 1);
-	
+	double scattering_pdf = rec.mat->ScatteringPDF(r, rec, scattered);
+	double pdf = scattering_pdf;
+	Color ColorFromScatter = (attenuation * (float)scattering_pdf * RayColor(scattered, shapes, max_depth - 1)) / (float)pdf;
 	return ColorFromScatter + FromEmission;
-	
 }
 
 #endif

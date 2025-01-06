@@ -22,8 +22,10 @@ private:
 	void SetUpQuads();
 	void SetUpCornellBox();
 	void SetUpCornellSmoke();
+	void SetUpGltfScene();
 	void FinalScene();
 	void SetCameraFocusValues(float defocus_angle, float focus_distance);
+	void StoreColor(Color col, int x, int y);
 	AABB GetShapeBox();
 	uint16_t WIDTH;
 	uint16_t HEIGHT;
@@ -32,9 +34,12 @@ private:
 	Camera cam;
 	ShapeList shapes;
 	AABB shape_box;
-	int scene = 7;
-	int sample_count = 30;
-	int ray_depth = 12;
+	int sqrt_spp;
+	int scene = 9;
+	int sample_count = 20;
+	int ray_depth = 8;
+	std::vector<size_t> image_horizontal_iterator, image_vertical_iterator;
+	std::vector<Color> colors;
 };
 #endif
 
