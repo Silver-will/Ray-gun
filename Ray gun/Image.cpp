@@ -344,9 +344,9 @@ void Image::SetUpGltfScene()
 	//glm::mat4 transform = glm::mat4(1.0f);
 	//transform = glm::translate(transform, glm::vec3(0.0f,0.0f,3.0f));
 	//transform = glm::scale(transform, glm::vec3(2.0f));
-	auto v2 = Point(0.5, 0.5, 1);
-	auto v1 = Point(1, 2, 1);
-	auto v0 = Point(2, 0.5, 1);
+	auto v2 = Point(0.5, 0.5, 5);
+	auto v1 = Point(1, 5, 5);
+	auto v0 = Point(1.5, 0.5, 5);
 
 	//glm::vec4 e0 = transform * glm::vec4(v0, 1.0f);
 	//glm::vec4 e1 = transform * glm::vec4(v1, 1.0f);
