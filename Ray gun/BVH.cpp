@@ -4,10 +4,8 @@ bool BVH_Node::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
 {
 	if(!box.Hit(r,ray_t))
 		return false;
-	bool
-		hit_left = left->RayHit(r, hit, ray_t);
-	bool
-		hit_right = right->RayHit(r, hit, Interval(ray_t.min, hit_left ? hit.t : ray_t.max));
+	bool hit_left = left->RayHit(r, hit, ray_t);
+	bool hit_right = right->RayHit(r, hit, Interval(ray_t.min, hit_left ? hit.t : ray_t.max));
 	return
 		hit_left || hit_right;
 }

@@ -56,7 +56,6 @@ void Polygun::AddToScene(ShapeList& shapes)
 
             //std::shared_ptr<Shape> triangle = std::make_shared<Triangle>(v0.position, v1.position, v2.position, green);
             shapes.Add(std::make_shared<Triangle>(v0, v1, v2, green));
-            //triangle = std::make_shared<RotateY>(triangle, 15);
 
             //auto offset = Point(265, 0, 295);
             //auto offset2 = offset * 1.5f;

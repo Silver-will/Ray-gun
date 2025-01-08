@@ -153,6 +153,7 @@ void Image::SetUpSphereScene()
 	shapes.Add(std::make_shared<Sphere>(Point(0, -10, -1.0), 10.0f, checker));
 	shapes.Add(std::make_shared<Sphere>(Point(0, 10, -1.0), 10.0f, checker));
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
+	
 
 }
 
@@ -297,7 +298,7 @@ void Image::SetUpCornellSmoke()
 	transform = glm::scale(transform, glm::vec3(1.0f,1.0f,1.0f));
 	auto v0 = Point(138, 138, 450);
 	auto v1 = Point(207, 276, 450);
-	auto v2 = Point(276, 0.1, 450);
+	auto v2 = Point(276, 138, 450);
 
 	Triangle tri(v0, v1, v2, red);
 	//tri.Translate(glm::vec3(100,0,0));
@@ -319,8 +320,8 @@ void Image::SetUpCornellSmoke()
 	box2 = std::make_shared<RotateY>(box2, -18);
 	box2 = std::make_shared<Translate>(box2, Point(130,0,65));
 
-	//shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
-	//shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+	shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
+	shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
 
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
@@ -345,7 +346,7 @@ void Image::SetUpGltfScene()
 	//transform = glm::translate(transform, glm::vec3(0.0f,0.0f,3.0f));
 	//transform = glm::scale(transform, glm::vec3(2.0f));
 	auto v2 = Point(0.5, 0.5, 5);
-	auto v1 = Point(1, 5, 5);
+	auto v1 = Point(1, 1.5, 5);
 	auto v0 = Point(1.5, 0.5, 5);
 
 	//glm::vec4 e0 = transform * glm::vec4(v0, 1.0f);
@@ -356,9 +357,9 @@ void Image::SetUpGltfScene()
 	//v1 = glm::vec3(e1);
 	//v2 = glm::vec3(e2);
 
-	//Polygun model("assets/plane.glb",Point(10,10,4));
-	//model.AddToScene(shapes);
-	shapes.Add(std::make_shared<Triangle>(v0, v1, v2, leftRed));
+	Polygun model("assets/triangle.glb",Point(10,10,4));
+	model.AddToScene(shapes);
+	shapes.Add(std::make_shared<Triangle>(v0,v2,v1,leftRed));
 
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 	

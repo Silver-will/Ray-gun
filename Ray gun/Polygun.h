@@ -4,12 +4,13 @@
 #include "GLTFLoading.h"
 #include "ShapeList.h"
 #include "AABB.h"
+
 struct Triangle : public Shape
 {
 	Triangle(Point V0, Point V1, Point V2, std::shared_ptr<Material> Mat) : v0{ V0 }, v1{ V1 }, v2{ V2 }, mat{ Mat } {
 		glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
 		glm::vec3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-		auto minx = fmin(v0.x, fmin(v1.x,v2.x));
+		auto minx = fmin(v0.x, fmin(v1.x, v2.x));
 		auto miny = fmin(v0.y, fmin(v1.y, v2.y));
 		auto minz = fmin(v0.z, fmin(v1.z, v2.z));
 
@@ -34,7 +35,7 @@ struct Triangle : public Shape
 			fmax(v0.y, fmax(v1.y, v2.y)),
 			fmax(v0.z, fmax(v1.z, v2.z)));
 		*/
-		BBox = AABB(glm::vec3(-5), glm::vec3(5)).Pad();
+		BBox = AABB(min, max).Pad();
 	}
 
 	Triangle(const Triangle& tri);

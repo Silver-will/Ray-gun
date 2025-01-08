@@ -31,13 +31,15 @@ bool AABB::Hit(const Ray& r, Interval ray_t)const
 		auto t1 = (axis(a).max - orig) * invD;
 		if (invD < 0)
 		std::swap(t0, t1);
+
 		if (t0 > ray_t.min)
 		ray_t.min = t0;
+
 		if(t1 < ray_t.max)
 		ray_t.max = t1;
+
 		if(ray_t.max <= ray_t.min)
-		return
-		false;
+			return false;
 	}
 	return true;
 }
