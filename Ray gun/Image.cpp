@@ -94,7 +94,7 @@ void Image::PrintToFile()
 	image << "P3\n" << WIDTH << ' ' << HEIGHT << "\n255\n";
 	auto draw_start = std::chrono::steady_clock::now();
 
-#define MT 0
+#define MT 1
 #if MT
 	std::for_each(std::execution::par, image_vertical_iterator.begin(), image_vertical_iterator.end(), [this](size_t j)
 		{
@@ -228,13 +228,17 @@ void Image::SetUpQuads()
 	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
 	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
 	auto lowerTeal = std::make_shared<Lambertian>(Color (0.2, 0.8, 0.8));
+	auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
 
 
 	shapes.Add(std::make_shared<Quad>(Point(-3, -2, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed));
 	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 0), Point(4, 0, 0), Point(0, 4, 0), backGreen));
 	shapes.Add(std::make_shared<Quad>(Point(3, -2, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue));
 	shapes.Add(std::make_shared<Quad>(Point(-2, 3, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange));
+	shapes.Add(std::make_shared<Quad>(Point(-1, 3, 2.5), Point(2, 0, 0), Point(0, 0, -2), light));
 	shapes.Add(std::make_shared<Quad>(Point(-2, -3, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+	shapes.Add(std::make_shared	<Triangle>(Point(-1, -1, 1), Point(1, -1, 1), Point(0, 1, 1), lowerTeal));
+
 
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
@@ -281,7 +285,7 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
-	shapes.Add(std::make_shared	<Triangle>(Point(138,138,450), Point(207,276, 450), Point(276,138, 450),red));
+	shapes.Add(std::make_shared	<Triangle>(Point(138, 138, 450), Point(276, 138, 450), Point(207, 276, 450),green));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
 	box1 = std::make_shared<RotateY>(box1, 15);

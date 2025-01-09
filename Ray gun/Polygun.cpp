@@ -3,61 +3,20 @@
 
 bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
 {
-    /*static constexpr float kEpsilon = 1e-8;
+    static constexpr float kEpsilon = 1e-8;
     glm::vec3 e0 = v0 - v2;
     glm::vec3 e1 = v1 - v2;
     glm::vec3 pvec = glm::cross(r.GetDirection(), e1);
-    float det = glm::dot(e0,pvec);
-
+    float det = glm::dot(e0, pvec);
     
-    Culling
-     if (det < kEpsilon) return false;
+    //Culling
+    //if (det < kEpsilon) return false;
     
     if (fabs(det) < kEpsilon) return false;
 
     float invDet = 1 / det;
 
     glm::vec3 tvec = r.GetOrigin() - v2;
-    u = glm::dot(tvec,pvec) * invDet;
-    if (u < 0 || u > 1) return false;
-
-    glm::vec3 qvec = glm::cross(tvec, e0);
-    v = glm::dot(r.GetDirection(), qvec) * invDet;
-    if (v < 0 || u + v > 1) return false;
-
-    std::array<glm::vec2, 3>uv{
-        glm::vec2(0,0),glm::vec2(1,0),glm::vec2(1,1)
-    };
-    t = glm::dot(e1, qvec) * invDet;
-    hit.t = t;
-    auto uv_sample = u * uv[0] + v * uv[1] + (1-u-v) * uv[2];
-    //hit.u = uv_sample.x;
-    //hit.v = uv_sample.y;
-    hit.u = u;
-    hit.v = v;
-    //auto outward_facing_normal = glm::cross();
-    hit.p = r.At(hit.t);
-    hit.normal = glm::normalize(glm::cross(v1-v0,v2-v0));
-    hit.mat = mat;
-
-    return true;
-    */
-
-    static constexpr float kEpsilon = 1e-8;
-    glm::vec3 e0 = v1 - v0;
-    glm::vec3 e1 = v2 - v0;
-    glm::vec3 pvec = glm::cross(r.GetDirection(), e1);
-    float det = glm::dot(e0, pvec);
-
-    /*
-    Culling
-     if (det < kEpsilon) return false;
-    */
-    if (fabs(det) < kEpsilon) return false;
-
-    float invDet = 1 / det;
-
-    glm::vec3 tvec = r.GetOrigin() - v0;
     u = glm::dot(tvec, pvec) * invDet;
     if (u < 0 || u > 1) return false;
 
@@ -76,10 +35,10 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
     hit.t = t;
     hit.u = u;
     hit.v = v;
-    //auto outward_facing_normal = glm::cross();
     hit.p = r.At(hit.t);
-    auto outward_facing_normal = glm::cross(e0, e1);
+    auto outward_facing_normal = glm::normalize(glm::cross(e0, e1));
     hit.SetFaceNormal(r, outward_facing_normal);
+    hit.normal = -outward_facing_normal;
     //hit.normal = glm::normalize(glm::cross(e0, e1));
     hit.mat = mat;
 

@@ -1,25 +1,32 @@
 #include "GLTFLoading.h"
 #include <print>
+#include <fastgltf/glm_element_traits.hpp>
+#include <fastgltf/parser.hpp>
+#include <fastgltf/tools.hpp>
 
-std::optional<std::vector<MeshData>>LoadGLTF(std::filesystem::path filePath)
+
+std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
 {
-	std::cout << "Loading Input Model at: " << filePath << std::endl;
+    std::cout << "Loading Input Model at: " << filePath << std::endl;
 
     fastgltf::GltfDataBuffer data;
     data.loadFromFile(filePath);
 
-    constexpr auto gltfOptions = fastgltf::Options::LoadGLBBuffers
+    constexpr auto gltfOptions = fastgltf::Options::DontRequireValidAssetMember | fastgltf::Options::AllowDouble | fastgltf::Options::LoadGLBBuffers
         | fastgltf::Options::LoadExternalBuffers;
 
     fastgltf::Asset gltf;
     fastgltf::Parser parser{};
 
-    auto load = parser.loadBinaryGLTF(&data, filePath.parent_path(), gltfOptions);
+    std::filesystem::path path = filePath;
+    auto hold = path.parent_path();
+    auto load = parser.loadBinaryGLTF(&data, hold, gltfOptions);
     if (load) {
         gltf = std::move(load.get());
     }
     else {
-        std::print("Failed to load glTF: {} \n", fastgltf::to_underlying(load.error()));
+        //std::print("Failed to load glTF: {} \n", fastgltf::to_underlying(load.error()));
+        std::cerr << "Failed to load gltf: " << fastgltf::to_underlying(load.error()) << std::endl;;
         return {};
     }
 
@@ -90,7 +97,7 @@ std::optional<std::vector<MeshData>>LoadGLTF(std::filesystem::path filePath)
         }
         new_mesh.vertices = vertices;
         new_mesh.indices = indices;
-        
+
         meshes.emplace_back(std::move(new_mesh));
     }
     return meshes;
