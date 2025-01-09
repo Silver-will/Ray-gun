@@ -1,6 +1,8 @@
 #ifndef POLYGUN_H
 #define POLYGUN_H
 #pragma once
+#include "ShapeList.h"
+#include "Material.h"
 #include "GLTFLoading.h"
 #include "Shape.h"
 #include "AABB.h"
@@ -34,10 +36,11 @@ struct Triangle : public Shape
 
 		//min = glm::vec3(-450);
 		//max = glm::vec3(450);
+		//BBox = AABB(glm::vec3(138), glm::vec3(450));
 		BBox = AABB(min, max).Pad();
-		//BBox.x.Expand(20);
-		//BBox.y.Expand(100);
-		//BBox.z.Expand(100);
+		BBox.x = BBox.x.Expand(1);
+		BBox.y = BBox.y.Expand(1);
+		BBox.z = BBox.z.Expand(1);
 	}
 	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
 	Color GetColor() override;
@@ -54,14 +57,18 @@ private:
 struct Polygun
 {
 	Polygun(const std::vector<MeshData>& _geometry);
+	Polygun(std::string_view model_path, Point pos);
+	void AddToScene(ShapeList& shapes);
 	Color GetColor();
 	Point GetPos();
-	AABB GetBoundingBox()const;
 
 private:
 	std::vector<MeshData> geometry;
+	std::vector<float> vertices;
+	std::vector<float> indices;
 	AABB BBox;
 	std::shared_ptr<Material> mat;
+	Point world_position;
 };
 #endif
 

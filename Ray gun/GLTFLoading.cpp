@@ -26,7 +26,7 @@ std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
     }
     else {
         //std::print("Failed to load glTF: {} \n", fastgltf::to_underlying(load.error()));
-        std::cerr << "Failed to load gltf: " << fastgltf::to_underlying(load.error()) << std::endl;;
+        std::cerr << "Failed to load glTF: " << fastgltf::to_underlying(load.error()) << std::endl;
         return {};
     }
 

@@ -67,9 +67,10 @@ Image::Image(uint16_t width, double aspectRatio)
 		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
 		FinalScene();
 	case 9:
-		SetCameraFocusValues(0, 6.0);
-		cam.setCameraAngle(Point(278, 278, -800), Point(278, 278, 0), Point(0, 1, 0), 40.0);
-		
+		SetCameraFocusValues(0, 10.0);
+		cam.setCameraAngle(Point(5, 5, 9), Point(5, 5, 0), Point(0, 1, 0), 80.0);
+		SetUpGltfScene();
+
 	default:
 		break;
 	}
@@ -285,7 +286,7 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
-	shapes.Add(std::make_shared	<Triangle>(Point(138, 138, 450), Point(276, 138, 450), Point(207, 276, 450),green));
+	shapes.Add(std::make_shared	<Triangle>(Point(276, 138, 450), Point(414, 138, 450), Point(345, 276, 450),green));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
 	box1 = std::make_shared<RotateY>(box1, 15);
@@ -298,12 +299,36 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
 	shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
 
+	auto smoke = shapes.objects.size();
+	smoke /= 2;
+	auto fr = shapes.objects[smoke];
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::SetUpGltfScene()
 {
+	auto leftRed = std::make_shared<Lambertian>(Color(1, 0, 0));
+	auto backGreen = std::make_shared<Lambertian>(Color(0, 1, 0));
+	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
+	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
+	auto lowerTeal = std::make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
+	auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
+	auto NoiseTex = std::make_shared<NoiseTexture>(4);
+	auto Noise = std::make_shared<Lambertian>(NoiseTex);
+	auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
 
+
+	shapes.Add(std::make_shared<Quad>(Point(2, 3, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed));
+	shapes.Add(std::make_shared<Quad>(Point(3, 3, 0), Point(4, 0, 0), Point(0, 4, 0), std::make_shared<Lambertian>(earthTex)));
+	shapes.Add(std::make_shared<Quad>(Point(8, 3, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue));
+	shapes.Add(std::make_shared<Quad>(Point(3, 8, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange));
+	shapes.Add(std::make_shared<Quad>(Point(4, 8, 2.5), Point(2, 0, 0), Point(0, 0, -2), light));
+	shapes.Add(std::make_shared<Quad>(Point(3, 2, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+	shapes.Add(std::make_shared	<Triangle>(Point(4, 4, 1), Point(6, 4, 1), Point(5, 6, 1), leftRed));
+
+	Polygun model("assets/monkey.glb", Point(5));
+	model.AddToScene(shapes);
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::FinalScene()
