@@ -1,7 +1,12 @@
 #include "Polygun.h"
+
 #include "ShapeList.h"
 #include "Material.h"
+
 #include <array>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 Polygun::Polygun(std::string_view model_path, Point pos)
 {

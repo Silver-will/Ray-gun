@@ -7,6 +7,8 @@
 #include "Polygun.h"
 #include "ConstantMedium.h"
 #include "GLTFLoading.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <execution>
 #include<chrono>
@@ -19,12 +21,16 @@ Image::Image(uint16_t width, double aspectRatio)
 	colors.resize(WIDTH * HEIGHT);
 	image_horizontal_iterator.resize(WIDTH);
 	image_vertical_iterator.resize(HEIGHT);
+
 	for (size_t i = 0; i < WIDTH; i++)
 		image_horizontal_iterator[i] = i;
 	for (size_t i = 0; i < HEIGHT; i++)
 		image_vertical_iterator[i] = i;
 
 	cam = Camera(HEIGHT, WIDTH);
+	sqrt_spp = std::sqrt(sample_count);
+	double recip_sqrt_spp = 1.0 / sqrt_spp;
+	cam.recip_sqrt_spp = recip_sqrt_spp;
 	switch (scene)
 	{
 	case 1:
@@ -70,7 +76,6 @@ Image::Image(uint16_t width, double aspectRatio)
 		SetCameraFocusValues(0, 10.0);
 		cam.setCameraAngle(Point(0, 0, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
 		SetUpGltfScene();
-
 	default:
 		break;
 	}
@@ -103,10 +108,13 @@ void Image::PrintToFile()
 				{
 					//std::clog << "Lines left = " << HEIGHT - j << "\n";
 					Color pixel_color = Color(0.0f);
-					for (size_t sample = 0; sample < sample_count; sample++)
+					for (int s_j = 0; s_j < sqrt_spp; s_j++)
 					{
-						auto ray = cam.GetRay(i, j);
-						pixel_color += RayColor(ray, shapes, ray_depth);
+						for (int s_i = 0; s_i < sqrt_spp; s_i++)
+						{
+							auto ray = cam.GetRay(i, j, s_i, s_j);
+							pixel_color += RayColor(ray, shapes, ray_depth);
+						}
 					}
 					colors[j * WIDTH + i] = pixel_color;
 				});
@@ -286,6 +294,7 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
+  
 	shapes.Add(std::make_shared	<Triangle>(Point(276, 138, 450), Point(414, 138, 450), Point(345, 276, 450),green));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
@@ -296,8 +305,8 @@ void Image::SetUpCornellSmoke()
 	box2 = std::make_shared<RotateY>(box2, -18);
 	box2 = std::make_shared<Translate>(box2, Point(130,0,65));
 
-	shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
-	shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+	//shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
+	//shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
 
 	auto smoke = shapes.objects.size();
 	smoke /= 2;
@@ -308,6 +317,7 @@ void Image::SetUpCornellSmoke()
 void Image::SetUpGltfScene()
 {
 	auto leftRed = std::make_shared<Lambertian>(Color(1, 0, 0));
+
 	auto backGreen = std::make_shared<Lambertian>(Color(0, 1, 0));
 	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
 	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
@@ -338,6 +348,7 @@ void Image::SetUpGltfScene()
 	Polygun model("assets/monkey.glb", Point(0,-0.8,3));
 	model.AddToScene(shapes);
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
+
 }
 
 void Image::FinalScene()
