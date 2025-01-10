@@ -10,7 +10,11 @@ Render times where Measured in Release mode, on a single thread.
 
 ## Upcoming Work list
 [] Improved monte carlo sampling
+
 [] bidirectional path tracing
+
 [] disney brdf
+
 [] denoising
+
 [] wavefront path tracing?
