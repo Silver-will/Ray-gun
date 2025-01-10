@@ -26,7 +26,8 @@ Point Polygun::GetPos()
 void Polygun::AddToScene(ShapeList& shapes)
 {
     auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
-    auto leftRed = std::make_shared<Lambertian>(Color(1, 0, 0));
+    auto col = std::make_shared<Lambertian>(Color(0.65, 0.65, 0.05));
+    //auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
     for (int i = 0; i < geometry.size(); i++)
     {
         for (int j = 0; j < geometry[i].indices.size(); j += 3)
@@ -55,7 +56,7 @@ void Polygun::AddToScene(ShapeList& shapes)
             //v2 = glm::vec3(e2);
 
             //std::shared_ptr<Shape> triangle = std::make_shared<Triangle>(v0.position, v1.position, v2.position, green);
-            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, leftRed));
+            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, col));
         }
     }
     auto stuff = shapes.objects.size();
@@ -69,12 +70,12 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
     glm::vec3 e0 = v0 - v2;
     glm::vec3 e1 = v1 - v2;
     glm::vec3 pvec = glm::cross(r.GetDirection(), e1);
-    float det = fabs(glm::dot(e0, pvec));
+    float det = glm::dot(e0, pvec);
     
-    //Culling
-    //if (det < kEpsilon) return false;
-    
+    if (det < kEpsilon) return false;
+
     if (fabs(det) < kEpsilon) return false;
+    //det = fabs(det);
 
     float invDet = 1 / det;
 
@@ -90,6 +91,9 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
         glm::vec2(0,0),glm::vec2(1,0),glm::vec2(1,1)
     };
     t = glm::dot(e1, qvec) * invDet;
+
+    if (!ray_t.Contains(t))
+        return false;
     
     auto uv_sample = u * uv[0] + v * uv[1] + (1 - u - v) * uv[2];
     //hit.u = uv_sample.x;
@@ -99,8 +103,8 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
     hit.v = v;
     hit.p = r.At(hit.t);
     auto outward_facing_normal = glm::normalize(glm::cross(e0, e1));
-    hit.SetFaceNormal(r, outward_facing_normal);
-    //hit.normal = outward_facing_normal;
+    //hit.SetFaceNormal(r, outward_facing_normal);
+    hit.normal = -outward_facing_normal;
     //hit.normal = glm::normalize(glm::cross(e0, e1));
     hit.mat = mat;
 

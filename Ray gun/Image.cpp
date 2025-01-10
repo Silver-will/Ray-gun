@@ -68,7 +68,7 @@ Image::Image(uint16_t width, double aspectRatio)
 		FinalScene();
 	case 9:
 		SetCameraFocusValues(0, 10.0);
-		cam.setCameraAngle(Point(5, 5, 9), Point(5, 5, 0), Point(0, 1, 0), 80.0);
+		cam.setCameraAngle(Point(0, 0, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
 		SetUpGltfScene();
 
 	default:
@@ -312,21 +312,30 @@ void Image::SetUpGltfScene()
 	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
 	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
 	auto lowerTeal = std::make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
-	auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
-	auto NoiseTex = std::make_shared<NoiseTexture>(4);
-	auto Noise = std::make_shared<Lambertian>(NoiseTex);
-	auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
+	auto teal = lowerTeal;
+	auto light = std::make_shared<DiffuseLight>(Color(10));
+	auto purple = std::make_shared<Lambertian>(Color(0.521, 0.349, 0.533));
+	//auto NoiseTex = std::make_shared<NoiseTexture>(4);
+	//auto Noise = std::make_shared<Lambertian>(NoiseTex);
+	//auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
 
+	//left
+	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 5), Point(0, 0, -4), Point(0, 4, 0), teal));
+	//back
+	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 1), Point(4, 0, 0), Point(0, 4, 0),teal));
+	//right
+	shapes.Add(std::make_shared<Quad>(Point(2, -2, 1), Point(0, 0, 4), Point(0, 4, 0), teal));
+	//top
+	shapes.Add(std::make_shared<Quad>(Point(-2, 2, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+	//bottom
+	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+	//background
+	shapes.Add(std::make_shared<Quad>(Point(-50, -50, -10), Point(100, 0, 0), Point(0, 100, 0), purple));
+	
+	shapes.Add(std::make_shared<Quad>(Point(-1, 2, 4), Point(2, 0, 0), Point(0, 0, -2), light));
+	shapes.Add(std::make_shared<Sphere>(Point(0, 130, 0), 90.0f, light));
 
-	shapes.Add(std::make_shared<Quad>(Point(2, 3, 5), Point(0, 0, -4), Point(0, 4, 0), leftRed));
-	shapes.Add(std::make_shared<Quad>(Point(3, 3, 0), Point(4, 0, 0), Point(0, 4, 0), std::make_shared<Lambertian>(earthTex)));
-	shapes.Add(std::make_shared<Quad>(Point(8, 3, 1), Point(0, 0, 4), Point(0, 4, 0), rightBlue));
-	shapes.Add(std::make_shared<Quad>(Point(3, 8, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange));
-	shapes.Add(std::make_shared<Quad>(Point(4, 8, 2.5), Point(2, 0, 0), Point(0, 0, -2), light));
-	shapes.Add(std::make_shared<Quad>(Point(3, 2, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
-	shapes.Add(std::make_shared	<Triangle>(Point(4, 4, 1), Point(6, 4, 1), Point(5, 6, 1), leftRed));
-
-	Polygun model("assets/monkey.glb", Point(5));
+	Polygun model("assets/monkey.glb", Point(0,-0.8,3));
 	model.AddToScene(shapes);
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }

@@ -20,7 +20,7 @@ Ray Camera::GetRay(size_t& row, size_t& col) const
 	auto ray_direction = pixel_sample - ray_origin;
 	auto ray_time = random_double();
 
-
+	ray_direction = glm::normalize(ray_direction);
 	return Ray(ray_origin, ray_direction,ray_time);
 }
 Camera::Camera(uint16_t& height, uint16_t& width):image_height{height}, image_width{width}

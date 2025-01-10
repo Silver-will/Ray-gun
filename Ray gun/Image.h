@@ -35,7 +35,7 @@ private:
 	ShapeList shapes;
 	AABB shape_box;
 	int scene = 9;
-	int sample_count = 80;
+	int sample_count = 100;
 	int ray_depth = 8;
 	std::vector<size_t> image_horizontal_iterator, image_vertical_iterator;
 	std::vector<Color> colors;
