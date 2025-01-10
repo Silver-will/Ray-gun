@@ -34,9 +34,10 @@ private:
 	Camera cam;
 	ShapeList shapes;
 	AABB shape_box;
-	int sqrt_spp;
+
 	int scene = 9;
-	int sample_count = 20;
+	int sample_count = 100;
+
 	int ray_depth = 8;
 	std::vector<size_t> image_horizontal_iterator, image_vertical_iterator;
 	std::vector<Color> colors;

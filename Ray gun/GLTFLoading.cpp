@@ -7,7 +7,7 @@
 
 std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
 {
-	std::cout << "Loading Input Model at: " << filePath << std::endl;
+    std::cout << "Loading Input Model at: " << filePath << std::endl;
 
     fastgltf::GltfDataBuffer data;
     data.loadFromFile(filePath);
@@ -26,7 +26,7 @@ std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
     }
     else {
         //std::print("Failed to load glTF: {} \n", fastgltf::to_underlying(load.error()));
-        std::cerr << "Failed to load gltf: " << fastgltf::to_underlying(load.error()) << std::endl;;
+        std::cerr << "Failed to load glTF: " << fastgltf::to_underlying(load.error()) << std::endl;
         return {};
     }
 
@@ -97,7 +97,7 @@ std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
         }
         new_mesh.vertices = vertices;
         new_mesh.indices = indices;
-        
+
         meshes.emplace_back(std::move(new_mesh));
     }
     return meshes;

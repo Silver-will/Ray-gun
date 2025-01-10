@@ -1,40 +1,38 @@
 #ifndef POLYGUN_H
 #define POLYGUN_H
 #pragma once
+#include "ShapeList.h"
+#include "Material.h"
 #include "GLTFLoading.h"
 #include "ShapeList.h"
 #include "AABB.h"
 struct Triangle : public Shape
 {
 	Triangle(Point V0, Point V1, Point V2, std::shared_ptr<Material> Mat) : v0{ V0 }, v1{ V1 }, v2{ V2 }, mat{ Mat } {
-		glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
-		glm::vec3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-		auto minx = fmin(v0.x, fmin(v1.x,v2.x));
-		auto miny = fmin(v0.y, fmin(v1.y, v2.y));
-		auto minz = fmin(v0.z, fmin(v1.z, v2.z));
+		std::vector<Point> vertices;
+		vertices.push_back(v0);
+		vertices.push_back(v1);
+		vertices.push_back(v2);
 
-		auto maxx = fmax(v0.x, fmax(v1.x, v2.x));
-		auto maxy = fmax(v0.y, fmax(v1.y, v2.y));
-		auto maxz = fmax(v0.z, fmax(v1.z, v2.z));
+		glm::vec3 min = glm::vec3(10000000.0f, 1000000.0f, 1000000.0f);
+		glm::vec3 max = glm::vec3(-10000000.0f, -1000000.0f, -1000000.0f);
 
-		min.x = fmin(minx, min.x);
-		min.y = fmin(miny, min.y);
-		min.z = fmin(minz, min.z);
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				min[j] = __min(vertices[i][j], min[j]);
+				max[j] = __max(vertices[i][j], max[j]);
+			}
+		}
 
-		max.x = fmax(maxx, max.x);
-		max.y = fmax(maxy, max.y);
-		max.z = fmax(maxz, max.z);
-
-		/*
-		glm::vec3 min(fmin(v0.x, fmin(v1.x, v2.x)),
-			fmin(v0.y, fmin(v1.y, v2.y)),
-			fmin(v0.z, fmin(v1.z, v2.z)));
-
-		glm::vec3 max(fmax(v0.x, fmax(v1.x, v2.x)),
-			fmax(v0.y, fmax(v1.y, v2.y)),
-			fmax(v0.z, fmax(v1.z, v2.z)));
-		*/
-		BBox = AABB(glm::vec3(-5), glm::vec3(5)).Pad();
+		//min = glm::vec3(-450);
+		//max = glm::vec3(450);
+		//BBox = AABB(glm::vec3(138), glm::vec3(450));
+		BBox = AABB(min, max).Pad();
+		BBox.x = BBox.x.Expand(1);
+		BBox.y = BBox.y.Expand(1);
+		BBox.z = BBox.z.Expand(1);
 	}
 
 	Triangle(const Triangle& tri);
@@ -66,7 +64,7 @@ private:
 	std::vector<float> indices;
 	AABB BBox;
 	std::shared_ptr<Material> mat;
-	Point worldPos;
+	Point world_position;
 };
 #endif
 
