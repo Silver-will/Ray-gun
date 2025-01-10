@@ -18,3 +18,9 @@ Render times where Measured in Release mode, on a single thread.
 [] denoising
 
 [] wavefront path tracing?
+
+[] Port to opencl
+
+[] improve bvh
+
+[] embree
