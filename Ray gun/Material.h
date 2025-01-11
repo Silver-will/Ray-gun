@@ -12,12 +12,16 @@ struct Material
 
 	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,Color& attenuation, Ray& scattered)const = 0;
 	virtual Color Emitted(double u, double v, const Point& p);
+	virtual double scattering_pdf(const Ray& r_in, const HitRecord& rec, Ray& scattered) const {
+		return 0;
+	}
 };
 
 struct Lambertian : public Material {
 	Lambertian(const Color& a);
 	Lambertian(std::shared_ptr<Texture> a);
 	bool Scatter(const Ray& r_in, const HitRecord& rec,Color& attenuation, Ray& scattered)const override;
+	double scattering_pdf(const Ray& r_in, const HitRecord& rec, Ray& scattered) const;
 
 private:
 	std::shared_ptr<Texture> albedo;

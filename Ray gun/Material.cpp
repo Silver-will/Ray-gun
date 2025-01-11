@@ -19,7 +19,8 @@ Lambertian::Lambertian(std::shared_ptr<Texture> a) : albedo{a}
 
 bool Lambertian::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const
 {
-	auto scatter_dir = rec.normal + RandomUnitVector();
+	//auto scatter_dir = rec.normal + RandomUnitVector();
+	auto scatter_dir = RandomOnHemisphere(rec.normal);
 	if (IsVectorNearZero(scatter_dir))
 	{
 		scatter_dir = rec.normal;
@@ -27,6 +28,14 @@ bool Lambertian::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuati
 	scattered = Ray(rec.p, scatter_dir,r_in.GetTime());
 	attenuation = albedo->Value(rec.u,rec.v,rec.p);
 	return true;
+}
+
+double Lambertian::scattering_pdf(const Ray& r_in, const HitRecord& rec, Ray& scattered) const
+{
+	/*auto cos_theta = glm::dot(rec.normal, glm::normalize(scattered.GetDirection()));
+	return cos_theta < 0 ? 0 : cos_theta / pi;
+	*/
+	return 1 / (2 * pi);
 }
 
 Metal::Metal(const Color& a, float f) : albedo{ a },fuzz(f < 1 ? f : 1 )
