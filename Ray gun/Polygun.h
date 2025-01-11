@@ -4,19 +4,11 @@
 #include "ShapeList.h"
 #include "Material.h"
 #include "GLTFLoading.h"
-#include "Shape.h"
+#include "ShapeList.h"
 #include "AABB.h"
 struct Triangle : public Shape
 {
 	Triangle(Point V0, Point V1, Point V2, std::shared_ptr<Material> Mat) : v0{ V0 }, v1{ V1 }, v2{ V2 }, mat{ Mat } {
-		/*glm::vec3 min(fmin(v0.x, fmin(v1.x, v2.x)),
-			fmin(v0.y, fmin(v1.y, v2.y)),
-			fmin(v0.z, fmin(v1.z, v2.z)));
-
-		glm::vec3 max(fmax(v0.x, fmax(v1.x, v2.x)),
-			fmax(v0.y, fmax(v1.y, v2.y)),
-			fmax(v0.z, fmax(v1.z, v2.z)));
-		*/
 		std::vector<Point> vertices;
 		vertices.push_back(v0);
 		vertices.push_back(v1);
@@ -42,11 +34,15 @@ struct Triangle : public Shape
 		BBox.y = BBox.y.Expand(1);
 		BBox.z = BBox.z.Expand(1);
 	}
+
+	Triangle(const Triangle& tri);
+	void Translate(const glm::vec3& direction);
+	void Scale(const glm::vec3& scale);
 	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
 	Color GetColor() override;
 	Point GetPos() override;
 	AABB GetBoundingBox()const override;
-private:
+
 	AABB BBox;
 	Point v0, v1, v2;
 	float u, v, t;

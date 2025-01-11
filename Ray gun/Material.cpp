@@ -2,6 +2,11 @@
 #include "Hit.h"
 #include<iostream>
 
+double Material::ScatteringPDF(const Ray& r_in, const HitRecord& rec, const Ray& scattered)const
+{
+	return 0;
+}
+
 Color Material::Emitted(double u, double v, const Point& p)
 {
 	return Color(0);

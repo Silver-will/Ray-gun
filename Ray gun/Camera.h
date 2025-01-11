@@ -29,8 +29,6 @@ private:
 	float viewport_height;
 	float viewport_width;
 	float focal_length;
-	int sqrt_spp;
-	double recip_sqrt_spp;
 	glm::vec3 viewport_u;
 	glm::vec3 viewport_v;
 	glm::vec3 pixel_delta_u;

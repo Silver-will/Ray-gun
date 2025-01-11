@@ -7,6 +7,8 @@
 #include "Polygun.h"
 #include "ConstantMedium.h"
 #include "GLTFLoading.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <execution>
 #include<chrono>
@@ -19,6 +21,7 @@ Image::Image(uint16_t width, double aspectRatio)
 	colors.resize(WIDTH * HEIGHT);
 	image_horizontal_iterator.resize(WIDTH);
 	image_vertical_iterator.resize(HEIGHT);
+
 	for (size_t i = 0; i < WIDTH; i++)
 		image_horizontal_iterator[i] = i;
 	for (size_t i = 0; i < HEIGHT; i++)
@@ -73,7 +76,6 @@ Image::Image(uint16_t width, double aspectRatio)
 		SetCameraFocusValues(0, 10.0);
 		cam.setCameraAngle(Point(0, 0, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
 		SetUpGltfScene();
-
 	default:
 		break;
 	}
@@ -299,6 +301,7 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(555, 0, 0), Point(0, 0, 555), white));
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
+  
 	shapes.Add(std::make_shared	<Triangle>(Point(276, 138, 450), Point(414, 138, 450), Point(345, 276, 450),green));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
@@ -309,8 +312,8 @@ void Image::SetUpCornellSmoke()
 	box2 = std::make_shared<RotateY>(box2, -18);
 	box2 = std::make_shared<Translate>(box2, Point(130,0,65));
 
-	shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
-	shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+	//shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
+	//shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
 
 	auto smoke = shapes.objects.size();
 	smoke /= 2;
@@ -321,6 +324,7 @@ void Image::SetUpCornellSmoke()
 void Image::SetUpGltfScene()
 {
 	auto leftRed = std::make_shared<Lambertian>(Color(1, 0, 0));
+
 	auto backGreen = std::make_shared<Lambertian>(Color(0, 1, 0));
 	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
 	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
@@ -351,6 +355,7 @@ void Image::SetUpGltfScene()
 	Polygun model("assets/monkey.glb", Point(0,-0.8,3));
 	model.AddToScene(shapes);
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
+
 }
 
 void Image::FinalScene()
