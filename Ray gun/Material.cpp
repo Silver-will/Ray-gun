@@ -41,10 +41,10 @@ bool Lambertian::Scatter(const Ray& r_in, const HitRecord& rec, ScatterRecord& s
 
 double Lambertian::scattering_pdf(const Ray& r_in, const HitRecord& rec, Ray& scattered) const
 {
-	/*auto cos_theta = glm::dot(rec.normal, glm::normalize(scattered.GetDirection()));
+	auto cos_theta = glm::dot(rec.normal, glm::normalize(scattered.GetDirection()));
 	return cos_theta < 0 ? 0 : cos_theta / pi;
-	*/
-	return 1 / (2 * pi);
+	
+	//return 1 / (2 * pi);
 }
 
 Metal::Metal(const Color& a, float f) : albedo{ a },fuzz(f < 1 ? f : 1 )

@@ -113,7 +113,7 @@ void Image::PrintToFile()
 						for (int s_i = 0; s_i < cam.sqrt_spp; s_i++)
 						{
 							auto ray = cam.GetRay(i, j, s_i, s_j);
-							pixel_color += RayColor(ray, shapes, ray_depth);
+							pixel_color += RayColor(ray, shapes, ray_depth,lights);
 						}
 					}
 					/*
@@ -265,7 +265,7 @@ void Image::SetUpCornellBox()
 	auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
 	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
 	auto light = std::make_shared<DiffuseLight>(Color(15,15,15));
-
+	auto empty_material = std::make_shared<Material>();
 
 	shapes.Add(std::make_shared<Quad>(Point(555, 0, 0), Point(0, 555, 0), Point(0, 0, 555), green));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(0, 555, 0), Point(0, 0, 555), red));
@@ -283,7 +283,11 @@ void Image::SetUpCornellBox()
 	box2 = std::make_shared<RotateY>(box2, -18);
 	box2 = std::make_shared<Translate>(box2, Point(130, 0, 65));
 	shapes.Add(box2);
+
 	
+	//Light setup
+	lights.Add(std::make_shared<Quad>(Point(343, 554, 332), Point(-130, 0, 0), Point(0, 0, -105), empty_material));
+	lights.Add(std::make_shared<Sphere>(Point(190, 90, 190), 90, empty_material));
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
@@ -312,8 +316,10 @@ void Image::SetUpCornellSmoke()
 	box2 = std::make_shared<RotateY>(box2, -18);
 	box2 = std::make_shared<Translate>(box2, Point(130,0,65));
 
-	//shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
-	//shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+	auto empty_material = std::make_shared<Material>();
+	//Light setup
+	lights.Add(std::make_shared<Quad>(Point(343, 554, 332), Point(-130, 0, 0), Point(0, 0, -105), empty_material));
+	lights.Add(std::make_shared<Sphere>(Point(190, 90, 190), 90, empty_material));
 
 	auto smoke = shapes.objects.size();
 	smoke /= 2;

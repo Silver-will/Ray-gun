@@ -39,3 +39,8 @@ glm::vec3 ONB::local(const glm::vec3& a) const
 {
 	return a.x * u() + a.y * v() + a.z * w();
 }
+
+glm::vec3 ONB::transform(const glm::vec3& v) const {
+	// Transform from basis coordinates to local space.
+	return (v[0] * axis[0]) + (v[1] * axis[1]) + (v[2] * axis[2]);
+}

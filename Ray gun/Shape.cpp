@@ -90,6 +90,26 @@ void Sphere::GetSphereUV(const Point& p, double& u, double& v)
 	v = theta / pi;
 }
 
+glm::vec3 Sphere::Random(const Point& origin) const
+{
+	glm::vec3 direction = center - origin;
+	auto distance_squared = glm::dot(direction,direction);
+	ONB uvw;
+	uvw.build_from_w(direction);
+	return uvw.local(random_to_sphere(radius, distance_squared));
+}
+
+double Sphere::PDFValue(const Point& origin, const Point& direction) const
+{
+	HitRecord rec;
+	if (!this->RayHit(Ray(origin, direction), rec,Interval(0.001f, infinity)))
+		return 0;
+	auto cos_theta_max = sqrt(1 - radius * radius / glm::dot(center - origin,center-origin));
+	auto solid_angle = 2 * pi * (1 - cos_theta_max);
+	return 1 / solid_angle;
+}
+
+
 Translate::Translate(std::shared_ptr<Shape> s, const glm::vec3& displacement)
 	: object{s},offset{displacement} 
 {

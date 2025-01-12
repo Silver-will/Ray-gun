@@ -15,6 +15,7 @@ struct ONB
 	glm::vec3 local(float a, float b, float c) const;
 
 	glm::vec3 local(const glm::vec3& a) const;
+	glm::vec3 transform(const glm::vec3& v) const;
 
 	void build_from_w(const glm::vec3& w);
 private:

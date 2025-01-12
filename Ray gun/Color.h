@@ -43,6 +43,10 @@ inline void WriteColorOnce(std::ofstream& out, const int samples, std::vector<Co
 		auto g = col.y;
 		auto b = col.z;
 
+		if (r != r) r = 0.0;
+		if (g != g) g = 0.0;
+		if (b != b) b = 0.0;
+
 		r *= scale;
 		g *= scale;
 		b *= scale;

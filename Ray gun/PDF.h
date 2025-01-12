@@ -31,7 +31,7 @@ private:
 
 struct HittablePDF : public PDF {
 	HittablePDF(const Shape& _objects, const Point& _origin) :
-		objects{ _objects },origin{origin} { }
+		objects{ _objects },origin{_origin} { }
 	double Value(const glm::vec3& direction)const override;
 	glm::vec3 Generate() const override;
 private:
