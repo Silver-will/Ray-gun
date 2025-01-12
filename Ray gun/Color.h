@@ -6,6 +6,7 @@
 #include "ShapeList.h"
 #include"Material.h"
 #include"Common.h"
+#include "PDF.h"
 #include<fstream>
 
 
@@ -55,28 +56,42 @@ inline void WriteColorOnce(std::ofstream& out, const int samples, std::vector<Co
 	}
 }
 
-inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth) 
+inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth,const Shape& lights) 
 {
-	HitRecord rec;
 	static Color background(0.0);
 	if (max_depth <= 0)
 		return Color(0.0f);
-		
+	
+	HitRecord rec;
+
 	if (!shapes.RayHit(r, rec, Interval(0.001, Common::infinity)))
 		return background;
-	Ray scattered;
-	Color attenuation;
-	Color FromEmission = rec.mat->Emitted(rec.u, rec.v, rec.p);
-	if (!rec.mat->Scatter(r, rec, attenuation, scattered))
+
+	ScatterRecord srec;
+	
+	Color FromEmission = rec.mat->Emitted(r,rec,rec.u, rec.v, rec.p);
+	if (!rec.mat->Scatter(r, rec, srec))
 	{
 		return FromEmission;
 	}
 
-	float scattering_pdf = rec.mat->scattering_pdf(r, rec, scattered);
-	float pdf = scattering_pdf;
+	if (srec.skip_pdf)
+	{
+		return srec.attenuation * RayColor(srec.skip_pdf_ray, shapes, max_depth - 1,lights);
+	}
 
-	Color ColorFromScatter = (attenuation * scattering_pdf * RayColor(scattered, shapes, max_depth - 1))/pdf;
-	return ColorFromScatter + FromEmission;
+	auto light_ptr = std::make_shared<HittablePDF>(lights, rec.p);
+	MixturePDF p(light_ptr, srec.pdf_ptr);
+
+	Ray scattered = Ray(rec.p, p.Generate(), r.GetTime());
+	auto pdf_value = p.Value(scattered.GetDirection());
+
+	double scattering_pdf = rec.mat->scattering_pdf(r, rec, scattered);
+
+	Color sampleColor = RayColor(scattered, shapes, max_depth - 1, lights);
+	Color FromScatter = (srec.attenuation * (float)scattering_pdf * sampleColor) / (float)pdf_value;
+
+	return FromEmission + FromScatter;
 }
 
 #endif

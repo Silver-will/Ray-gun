@@ -8,8 +8,10 @@ struct Quad : public Shape
 	Quad(const Point& _Q, const glm::vec3& _u, const glm::vec3& _v, std::shared_ptr<Material> m);
 	virtual void SetBoundingBox();
 	AABB GetBoundingBox()const override;
-	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
+	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const override;
 	virtual bool IsInterior(double a, double b, HitRecord& rec) const;
+    double PDFValue(const Point& origin, const Point& direction) const override;
+    glm::vec3 Random(const Point& origin)const override;
 
 private:
 	Point Q;
@@ -18,6 +20,7 @@ private:
 	AABB BBox;
 	glm::vec3 normal;
 	double d;
+    double area;
 	glm::vec3 w;
 };
 

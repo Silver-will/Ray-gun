@@ -332,8 +332,6 @@ void Image::SetUpGltfScene()
 	auto teal = lowerTeal;
 	auto light = std::make_shared<DiffuseLight>(Color(10));
 	auto purple = std::make_shared<Lambertian>(Color(0.521, 0.349, 0.533));
-	//auto NoiseTex = std::make_shared<NoiseTexture>(4);
-	//auto Noise = std::make_shared<Lambertian>(NoiseTex);
 	//auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
 
 	//left

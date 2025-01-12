@@ -26,7 +26,7 @@ Sphere::Sphere(Point orig, Point orig1, float rad, std::shared_ptr<Material> Mat
 	BBox = AABB(aabb, aabb1);
 }
 
-bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)
+bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)const
 {
 	auto center = LerpCenter(r.GetTime());
 	glm::vec3 oc = r.GetOrigin() - center;
@@ -68,7 +68,7 @@ Point Sphere::GetPos()
 	return center;
 }
 
-Point Sphere::LerpCenter(double time)
+Point Sphere::LerpCenter(double time)const
 {
 	if (isMoving)
 	{
@@ -96,7 +96,7 @@ Translate::Translate(std::shared_ptr<Shape> s, const glm::vec3& displacement)
 }
 
 
-bool Translate::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool Translate::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
 	Ray offset_r(r.GetOrigin() - offset, r.GetDirection(), r.GetTime());
 
@@ -149,7 +149,7 @@ RotateY::RotateY(std::shared_ptr<Shape> p, double angle) :
 	box = AABB(min, max);
 }
 
-bool RotateY::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool RotateY::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
 	auto origin = r.GetOrigin();
 	auto direction = r.GetDirection();

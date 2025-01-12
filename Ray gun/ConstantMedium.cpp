@@ -18,7 +18,7 @@ AABB ConstantMedium::GetBoundingBox() const
     return boundary->GetBoundingBox();
 }
 
-bool ConstantMedium::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool ConstantMedium::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
     const bool enableDebug = false;
     const bool debugging = enableDebug && random_double() < 0.00001;

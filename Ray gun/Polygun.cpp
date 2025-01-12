@@ -58,7 +58,7 @@ void Polygun::AddToScene(ShapeList& shapes)
     stuff += 2;
 }
 
-bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
     static constexpr float kEpsilon = 1e-8;
     
@@ -75,17 +75,17 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
     float invDet = 1 / det;
 
     glm::vec3 tvec = r.GetOrigin() - v2;
-    u = glm::dot(tvec, pvec) * invDet;
+    auto u = glm::dot(tvec, pvec) * invDet;
     if (u < 0 || u > 1) return false;
 
     glm::vec3 qvec = glm::cross(tvec, e0);
-    v = glm::dot(r.GetDirection(), qvec) * invDet;
+    auto v = glm::dot(r.GetDirection(), qvec) * invDet;
     if (v < 0 || u + v > 1) return false;
 
     std::array<glm::vec2, 3>uv{
         glm::vec2(0,0),glm::vec2(1,0),glm::vec2(1,1)
     };
-    t = glm::dot(e1, qvec) * invDet;
+    auto t = glm::dot(e1, qvec) * invDet;
 
     if (!ray_t.Contains(t))
         return false;

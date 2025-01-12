@@ -29,6 +29,8 @@ private:
 	float viewport_height;
 	float viewport_width;
 	float focal_length;
+	uint16_t image_height;
+	uint16_t image_width;
 	glm::vec3 viewport_u;
 	glm::vec3 viewport_v;
 	glm::vec3 pixel_delta_u;

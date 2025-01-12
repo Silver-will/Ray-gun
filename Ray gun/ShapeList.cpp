@@ -11,7 +11,7 @@ void ShapeList::Add(std::shared_ptr<Shape> object)
 	Bbox = AABB(Bbox, object->GetBoundingBox());
 }
 
-bool ShapeList::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool ShapeList::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
     HitRecord temp_rec;
     auto hit_anything = false;

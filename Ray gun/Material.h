@@ -3,15 +3,25 @@
 #include "Common.h"
 #include "Shape.h"
 #include "Texture.h"
+#include "PDF.h"
 struct HitRecord;
 struct Ray;
+
+struct ScatterRecord {
+	Color attenuation;
+	std::shared_ptr<PDF> pdf_ptr;
+	bool skip_pdf;
+	Ray skip_pdf_ray;
+};
 
 struct Material 
 {
 	virtual ~Material() = default;
 
-	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,Color& attenuation, Ray& scattered)const = 0;
-	virtual Color Emitted(double u, double v, const Point& p);
+	virtual bool Scatter(const Ray& r_in, const HitRecord& rec, ScatterRecord& srec)const {
+		return false;
+	}
+	virtual Color Emitted(const Ray& r_in, const HitRecord& rec,double u, double v, const Point& p);
 	virtual double scattering_pdf(const Ray& r_in, const HitRecord& rec, Ray& scattered) const {
 		return 0;
 	}
@@ -20,7 +30,7 @@ struct Material
 struct Lambertian : public Material {
 	Lambertian(const Color& a);
 	Lambertian(std::shared_ptr<Texture> a);
-	bool Scatter(const Ray& r_in, const HitRecord& rec,Color& attenuation, Ray& scattered)const override;
+	bool Scatter(const Ray& r_in, const HitRecord& rec, ScatterRecord& srec)const override;
 	double scattering_pdf(const Ray& r_in, const HitRecord& rec, Ray& scattered) const;
 
 private:
@@ -29,7 +39,7 @@ private:
 
 struct Metal : public Material {
 	Metal(const Color& a, float f);
-	bool Scatter(const Ray& r_in, const HitRecord& rec,Color& attenuation, Ray& scattered)const override;
+	bool Scatter(const Ray& r_in, const HitRecord& rec, ScatterRecord& srec)const override;
 
 private:
 	Color albedo;
@@ -38,7 +48,7 @@ private:
 
 struct Dielectric : public Material {
 	Dielectric(float index_of_refraction);
-	bool Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const override;
+	bool Scatter(const Ray& r_in, const HitRecord& rec, ScatterRecord& srec)const override;
 private:
 	static double reflectance(double cosine, double ref_idx);
 	double ir;
@@ -47,8 +57,8 @@ private:
 struct DiffuseLight : public Material {
 	DiffuseLight(std::shared_ptr<Texture> a);
 	DiffuseLight(Color c);
-	bool Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const override;
-	Color Emitted(double u, double v, const Point& p);
+	//bool Scatter(const Ray& r_in, const HitRecord& rec, ScatterRecord& srec)const override;
+	Color Emitted(const Ray& r_in, const HitRecord& rec, double u, double v, const Point& p) override;
 private:
 	std::shared_ptr<Texture> emit;
 };
@@ -56,7 +66,8 @@ private:
 struct Isotropic : public Material {
 	Isotropic(Color c);
 	Isotropic(std::shared_ptr<Texture> a);
-	bool Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)const override;
+	bool Scatter(const Ray& r_in, const HitRecord& rec, ScatterRecord& srec)const override;
+	double scattering_pdf(const Ray& r_in, const HitRecord& rec, Ray& scattered) const override;
 
 private:
 	std::shared_ptr<Texture> albedo;

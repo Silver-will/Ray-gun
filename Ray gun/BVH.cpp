@@ -1,6 +1,6 @@
 #include "BVH.h"
 #include <algorithm>
-bool BVH_Node::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool BVH_Node::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
 	if(!box.Hit(r,ray_t))
 		return false;
