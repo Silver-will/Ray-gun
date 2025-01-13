@@ -52,16 +52,16 @@ struct Triangle : public Shape
 	Color color = Color(.73, .73, .73);
 };
 
-struct Polygun
+struct Mesh
 {
-	Polygun(const std::vector<MeshData>& _geometry);
-	Polygun(std::string_view model_path, Point pos);
+	Mesh(const std::vector<MeshData>& _geometry);
+	Mesh(std::string_view model_path, Point pos);
 	void AddToScene(ShapeList& shapes);
 	Color GetColor();
 	Point GetPos();
 
 private:
-	std::vector<MeshData> geometry;
+	std::vector<MeshData> LoadedObject;
 	std::vector<float> vertices;
 	std::vector<float> indices;
 	AABB BBox;

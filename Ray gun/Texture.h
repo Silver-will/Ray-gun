@@ -37,7 +37,9 @@ private:
 
 struct ImageTexture : public Texture
 {
+	ImageTexture(){}
 	ImageTexture(const char* filename);
+	void LoadImage(const char* filename);
 	Color Value(double u, double v, const Point& p)const override;
 
 private:

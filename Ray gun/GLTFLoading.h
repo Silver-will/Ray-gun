@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 #include "Typedefs.h"
+#include "Texture.h"
+#include <optional>
 
 struct Vertex {
 	glm::vec3 position;
@@ -19,9 +21,17 @@ struct GeoSurface {
 	uint32_t count;
 };
 
+struct BsdfMaterial {
+	std::optional<ImageTexture> albedo;
+	std::optional<ImageTexture> normal;
+	std::optional<ImageTexture> metalRoughAo;
+};
+
 struct MeshData {
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
+	BsdfMaterial materialData;
+	std::vector<ImageTexture> images;
 	std::vector<GeoSurface> surfaces;
 };
 

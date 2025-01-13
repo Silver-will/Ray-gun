@@ -8,45 +8,45 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-Polygun::Polygun(std::string_view model_path, Point pos)
+Mesh::Mesh(std::string_view model_path, Point pos)
 {
     auto model = LoadGLTF(model_path);
     if (model.has_value())
     {
-        this->geometry = model.value();
+        this->LoadedObject = model.value();
     }
     this->world_position = pos;
 }
 
-Polygun::Polygun(const std::vector<MeshData>& _geometry)
+Mesh::Mesh(const std::vector<MeshData>& _geometry)
 {
-    this->geometry = _geometry;
+    this->LoadedObject = _geometry;
 }
 
-Point Polygun::GetPos()
+Point Mesh::GetPos()
 {
     return world_position;
 }
 
-void Polygun::AddToScene(ShapeList& shapes)
+void Mesh::AddToScene(ShapeList& shapes)
 {
     auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
     auto col = std::make_shared<Lambertian>(Color(0.65, 0.65, 0.05));
     auto glass = std::make_shared<Dielectric>(1.5f);
-    auto metal = std::make_shared<Metal>(Color(0.8, 0.8, 0.9), 1.0);
+    auto metal = std::make_shared<Metal>(Color(0.8, 0.8, 0.9), 0.5);
     //auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
-    for (int i = 0; i < geometry.size(); i++)
+    for (int i = 0; i < LoadedObject.size(); i++)
     {
-        for (int j = 0; j < geometry[i].indices.size(); j += 3)
+        for (int j = 0; j < LoadedObject[i].indices.size(); j += 3)
         {
-            uint32_t i0 = geometry[i].indices[j];
-            uint32_t i1 = geometry[i].indices[j + 1];
-            uint32_t i2 = geometry[i].indices[j + 2];
+            uint32_t i0 = LoadedObject[i].indices[j];
+            uint32_t i1 = LoadedObject[i].indices[j + 1];
+            uint32_t i2 = LoadedObject[i].indices[j + 2];
 
             //auto v0 = geometry[i].vertices[i0].position;
-            auto v0 = geometry[i].vertices[i0].position;
-            auto v1 = geometry[i].vertices[i1].position;
-            auto v2 = geometry[i].vertices[i2].position;
+            auto v0 = LoadedObject[i].vertices[i0].position;
+            auto v1 = LoadedObject[i].vertices[i1].position;
+            auto v2 = LoadedObject[i].vertices[i2].position;
 
             v0 += world_position;
             v1 += world_position;

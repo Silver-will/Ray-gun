@@ -1,6 +1,6 @@
 #include "Texture.h"
 #include "Interval.h"
-
+#include <print>
 SolidColor::SolidColor(Color c) :ColorVal{c}
 {
 
@@ -41,6 +41,19 @@ Color CheckerTexture::Value(double u, double v, const Point& p)const
 ImageTexture::ImageTexture(const char* filename) : image(filename)
 {
 
+}
+
+void ImageTexture::LoadImage(const char* filename)
+{
+	if (image.Load(filename))return;
+	if (image.Load("images/"s + filename))return;
+	if (image.Load("../images/"s + filename))return;
+	if (image.Load("../../images/"s + filename))return;
+	if (image.Load("../../../images/"s + filename))return;
+	if (image.Load("../../../../images/"s + filename))return;
+	if (image.Load("../../../../../images/"s + filename))return;
+	if (image.Load("../../../../../../images/"s + filename))return;
+	std::cerr << "ERROR: Could not load image file '" << filename << "'.\n";
 }
 
 Color ImageTexture::Value(double u, double v, const Point& p)const

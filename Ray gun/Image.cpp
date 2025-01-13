@@ -334,32 +334,34 @@ void Image::SetUpGltfScene()
 	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
 	auto lowerTeal = std::make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
 	auto teal = lowerTeal;
-	auto light = std::make_shared<DiffuseLight>(Color(10));
+	auto light = std::make_shared<DiffuseLight>(Color(14));
 	auto purple = std::make_shared<Lambertian>(Color(0.521, 0.349, 0.533));
 	
 	//left
-	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 5), Point(0, 0, -4), Point(0, 4, 0), teal));
+	shapes.Add(std::make_shared<Quad>(Point(-4, -4, 5), Point(0, 0, -8), Point(0, 8, 0), leftRed));
 	//back
-	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 1), Point(4, 0, 0), Point(0, 4, 0),teal));
+	shapes.Add(std::make_shared<Quad>(Point(-4, -4, 1), Point(8, 0, 0), Point(0, 8, 0),backGreen));
 	//right
-	shapes.Add(std::make_shared<Quad>(Point(2, -2, 1), Point(0, 0, 4), Point(0, 4, 0), teal));
+	shapes.Add(std::make_shared<Quad>(Point(4, -4, 1), Point(0, 0, 8), Point(0, 8, 0), teal));
 	//top
-	shapes.Add(std::make_shared<Quad>(Point(-2, 2.0001, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+	shapes.Add(std::make_shared<Quad>(Point(-4, 4.0001, 5), Point(8, 0, 0), Point(0, 0, -8), purple));
 	//bottom
-	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+	shapes.Add(std::make_shared<Quad>(Point(-4, -4, 5), Point(8, 0, 0), Point(0, 0, -8), lowerTeal));
 	//background
 	shapes.Add(std::make_shared<Quad>(Point(-50, -50, -10), Point(100, 0, 0), Point(0, 100, 0), purple));
-	
-	shapes.Add(std::make_shared<Quad>(Point(-1, 2, 2), Point(2, 0, 0), Point(0, 0, 2), light));
+	//front
+	shapes.Add(std::make_shared<Quad>(Point(-4, -4, 10), Point(8, 0, 0), Point(0, 8, 0), backGreen));
+
+	shapes.Add(std::make_shared<Quad>(Point(-1.5, 4, 2), Point(3, 0, 0), Point(0, 0, 2), light));
 	//shapes.Add(std::make_shared<Quad>(Point(-1, -2, 4), Point(2, 0, 0), Point(0, 0, -2), light));
 	//shapes.Add(std::make_shared<Sphere>(Point(0, 130, 0), 30.0f, light));
 
-	Polygun model("assets/monkey.glb", Point(0,-0.8,3));
+	Mesh model("assets/monkey.glb", Point(0,-0.8,4));
 	model.AddToScene(shapes);
 
 	auto empty_material = std::make_shared<Material>();
-	lights.Add(make_shared<Quad>(Point(-1, 2, 2), Point(2, 0, 0), Point(0, 0, 2), empty_material));
-	lights.Add(std::make_shared<Sphere>(Point(0, -1, 0), 1.0f, empty_material));
+	lights.Add(make_shared<Quad>(Point(-1.5, 4, 2), Point(3, 0, 0), Point(0, 0, 2), empty_material));
+	//lights.Add(std::make_shared<Sphere>(Point(0, -1, 0), 1.0f, empty_material));
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 

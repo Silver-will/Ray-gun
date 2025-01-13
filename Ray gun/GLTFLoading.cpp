@@ -20,16 +20,33 @@ std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
 
     std::filesystem::path path = filePath;
     auto hold = path.parent_path();
-    auto load = parser.loadBinaryGLTF(&data, hold, gltfOptions);
-    if (load) {
-        gltf = std::move(load.get());
+    auto type = fastgltf::determineGltfFileType(&data);
+
+    if (type == fastgltf::GltfType::glTF) {
+        auto load = parser.loadGLTF(&data, hold, gltfOptions);
+        if (load) {
+            gltf = std::move(load.get());
+        }
+        else {
+            std::cerr << "Failed to load glTF: " << fastgltf::to_underlying(load.error()) << std::endl;
+            return {};
+        }
+    }
+    else if (type == fastgltf::GltfType::GLB) {
+        auto load = parser.loadBinaryGLTF(&data, hold, gltfOptions);
+        if (load) {
+            gltf = std::move(load.get());
+        }
+        else {
+            std::cerr << "Failed to load glTF: " << fastgltf::to_underlying(load.error()) << std::endl;
+            return {};
+        }
     }
     else {
-        //std::print("Failed to load glTF: {} \n", fastgltf::to_underlying(load.error()));
-        std::cerr << "Failed to load glTF: " << fastgltf::to_underlying(load.error()) << std::endl;
+        std::cerr << "Failed to determine glTF container" << std::endl;
         return {};
     }
-
+    
     std::vector<MeshData> meshes;
 
     std::vector<Vertex> vertices;
