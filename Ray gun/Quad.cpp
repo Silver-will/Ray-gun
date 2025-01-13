@@ -8,7 +8,27 @@ Quad::Quad(const Point& _Q, const glm::vec3& _u, const glm::vec3& _v, std::share
     d = dot(normal, Q);
     w = n / dot(n, n);
 
+    area = glm::length(n);
     SetBoundingBox();
+}
+
+double Quad::PDFValue(const Point& origin, const Point& direction) const
+{
+    HitRecord rec;
+    if (!this->RayHit(Ray(origin, direction), rec, Interval(0.001, Common::infinity)))
+        return 0;
+
+
+    auto distance_squared = rec.t * rec.t * glm::dot(direction, direction);
+    auto cosine = fabs(glm::dot(direction, rec.normal)) / glm::length(direction);
+
+    return distance_squared / (cosine * area);
+}
+
+glm::vec3 Quad::Random(const Point& origin)const
+{
+    auto p = Q + ((float)random_double() * u) + ((float)random_double() * v);
+    return p - origin;
 }
 
 void Quad::SetBoundingBox()
@@ -22,7 +42,7 @@ AABB Quad::GetBoundingBox() const
     return BBox;
 }
 
-bool Quad::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool Quad::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) const
 {
     auto denom = glm::dot(normal, r.GetDirection());
     // No hit if the ray is parallel to the plane.

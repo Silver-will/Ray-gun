@@ -28,9 +28,9 @@ Image::Image(uint16_t width, double aspectRatio)
 		image_vertical_iterator[i] = i;
 
 	cam = Camera(HEIGHT, WIDTH);
-	sqrt_spp = std::sqrt(sample_count);
-	double recip_sqrt_spp = 1.0 / sqrt_spp;
-	cam.recip_sqrt_spp = recip_sqrt_spp;
+	cam.sqrt_spp = int(std::sqrt(sample_count));
+	cam.recip_sqrt_spp = 1.0 / cam.sqrt_spp;
+
 	switch (scene)
 	{
 	case 1:
@@ -108,14 +108,21 @@ void Image::PrintToFile()
 				{
 					//std::clog << "Lines left = " << HEIGHT - j << "\n";
 					Color pixel_color = Color(0.0f);
-					for (int s_j = 0; s_j < sqrt_spp; s_j++)
+					for (int s_j = 0; s_j < cam.sqrt_spp; s_j++)
 					{
-						for (int s_i = 0; s_i < sqrt_spp; s_i++)
+						for (int s_i = 0; s_i < cam.sqrt_spp; s_i++)
 						{
 							auto ray = cam.GetRay(i, j, s_i, s_j);
-							pixel_color += RayColor(ray, shapes, ray_depth);
+							pixel_color += RayColor(ray, shapes, ray_depth,lights);
 						}
 					}
+					/*
+					for (size_t sample = 0; sample < sample_count; sample++)
+					{
+						auto ray = cam.GetRay(i, j);
+						pixel_color += RayColor(ray, shapes, ray_depth);
+					}
+					*/
 					colors[j * WIDTH + i] = pixel_color;
 				});
 		});
@@ -258,7 +265,7 @@ void Image::SetUpCornellBox()
 	auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
 	auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
 	auto light = std::make_shared<DiffuseLight>(Color(15,15,15));
-
+	
 
 	shapes.Add(std::make_shared<Quad>(Point(555, 0, 0), Point(0, 555, 0), Point(0, 0, 555), green));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 0), Point(0, 555, 0), Point(0, 0, 555), red));
@@ -277,6 +284,11 @@ void Image::SetUpCornellBox()
 	box2 = std::make_shared<Translate>(box2, Point(130, 0, 65));
 	shapes.Add(box2);
 	
+	//Light setup'
+	auto empty_material = std::make_shared<Material>();
+	lights.Add(make_shared<Quad>(Point(343, 554, 332), Point(-130, 0, 0), Point(0, 0, -105), empty_material));
+	//lights.Add(std::make_shared<Sphere>(Point(190, 90, 190), 90, empty_material));
+
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
@@ -295,7 +307,7 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
   
-	shapes.Add(std::make_shared	<Triangle>(Point(276, 138, 450), Point(414, 138, 450), Point(345, 276, 450),green));
+	shapes.Add(std::make_shared	<Triangle>(Point(345, 276, 450), Point(414, 138, 450), Point(276, 138, 450),green));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
 	box1 = std::make_shared<RotateY>(box1, 15);
@@ -305,12 +317,11 @@ void Image::SetUpCornellSmoke()
 	box2 = std::make_shared<RotateY>(box2, -18);
 	box2 = std::make_shared<Translate>(box2, Point(130,0,65));
 
-	//shapes.Add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
-	//shapes.Add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1, 1, 1)));
+	auto empty_material = std::make_shared<Material>();
+	lights.Add(make_shared<Quad>(Point(343, 554, 332), Point(-130, 0, 0), Point(0, 0, -105), empty_material));
+	lights.Add(std::make_shared<Sphere>(Point(190, 90, 190), 90, empty_material));
 
-	auto smoke = shapes.objects.size();
-	smoke /= 2;
-	auto fr = shapes.objects[smoke];
+
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
@@ -325,10 +336,7 @@ void Image::SetUpGltfScene()
 	auto teal = lowerTeal;
 	auto light = std::make_shared<DiffuseLight>(Color(10));
 	auto purple = std::make_shared<Lambertian>(Color(0.521, 0.349, 0.533));
-	//auto NoiseTex = std::make_shared<NoiseTexture>(4);
-	//auto Noise = std::make_shared<Lambertian>(NoiseTex);
-	//auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
-
+	
 	//left
 	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 5), Point(0, 0, -4), Point(0, 4, 0), teal));
 	//back
@@ -336,19 +344,23 @@ void Image::SetUpGltfScene()
 	//right
 	shapes.Add(std::make_shared<Quad>(Point(2, -2, 1), Point(0, 0, 4), Point(0, 4, 0), teal));
 	//top
-	shapes.Add(std::make_shared<Quad>(Point(-2, 2, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
+	shapes.Add(std::make_shared<Quad>(Point(-2, 2.0001, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
 	//bottom
 	shapes.Add(std::make_shared<Quad>(Point(-2, -2, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
 	//background
 	shapes.Add(std::make_shared<Quad>(Point(-50, -50, -10), Point(100, 0, 0), Point(0, 100, 0), purple));
 	
-	shapes.Add(std::make_shared<Quad>(Point(-1, 2, 4), Point(2, 0, 0), Point(0, 0, -2), light));
-	shapes.Add(std::make_shared<Sphere>(Point(0, 130, 0), 90.0f, light));
+	shapes.Add(std::make_shared<Quad>(Point(-1, 2, 2), Point(2, 0, 0), Point(0, 0, 2), light));
+	//shapes.Add(std::make_shared<Quad>(Point(-1, -2, 4), Point(2, 0, 0), Point(0, 0, -2), light));
+	//shapes.Add(std::make_shared<Sphere>(Point(0, 130, 0), 30.0f, light));
 
 	Polygun model("assets/monkey.glb", Point(0,-0.8,3));
 	model.AddToScene(shapes);
-	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 
+	auto empty_material = std::make_shared<Material>();
+	lights.Add(make_shared<Quad>(Point(-1, 2, 2), Point(2, 0, 0), Point(0, 0, 2), empty_material));
+	lights.Add(std::make_shared<Sphere>(Point(0, -1, 0), 1.0f, empty_material));
+	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 
 void Image::FinalScene()

@@ -32,6 +32,8 @@ void Polygun::AddToScene(ShapeList& shapes)
 {
     auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
     auto col = std::make_shared<Lambertian>(Color(0.65, 0.65, 0.05));
+    auto glass = std::make_shared<Dielectric>(1.5f);
+    auto metal = std::make_shared<Metal>(Color(0.8, 0.8, 0.9), 1.0);
     //auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
     for (int i = 0; i < geometry.size(); i++)
     {
@@ -49,26 +51,15 @@ void Polygun::AddToScene(ShapeList& shapes)
             v0 += world_position;
             v1 += world_position;
             v2 += world_position;
-            //glm::mat4 transform = glm::mat4(1.0f);
-            //transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, -10.0f));
-
-            //glm::vec4 e0 = transform * glm::vec4(v0, 1.0f);
-            //glm::vec4 e1 = transform * glm::vec4(v1, 1.0f);
-            //glm::vec4 e2 = transform * glm::vec4(v2, 1.0f);
-
-            //v0 = glm::vec3(e0);
-            //v1 = glm::vec3(e1);
-            //v2 = glm::vec3(e2);
-
-            //std::shared_ptr<Shape> triangle = std::make_shared<Triangle>(v0.position, v1.position, v2.position, green);
-            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, col));
+            
+            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, metal));
         }
     }
     auto stuff = shapes.objects.size();
     stuff += 2;
 }
 
-bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
     static constexpr float kEpsilon = 1e-8;
     
@@ -85,17 +76,17 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
     float invDet = 1 / det;
 
     glm::vec3 tvec = r.GetOrigin() - v2;
-    u = glm::dot(tvec, pvec) * invDet;
+    auto u = glm::dot(tvec, pvec) * invDet;
     if (u < 0 || u > 1) return false;
 
     glm::vec3 qvec = glm::cross(tvec, e0);
-    v = glm::dot(r.GetDirection(), qvec) * invDet;
+    auto v = glm::dot(r.GetDirection(), qvec) * invDet;
     if (v < 0 || u + v > 1) return false;
 
     std::array<glm::vec2, 3>uv{
         glm::vec2(0,0),glm::vec2(1,0),glm::vec2(1,1)
     };
-    t = glm::dot(e1, qvec) * invDet;
+    auto t = glm::dot(e1, qvec) * invDet;
 
     if (!ray_t.Contains(t))
         return false;
@@ -209,6 +200,24 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
 
 }
 
+float Triangle::Area() const
+{
+    return 0.5f * glm::length(glm::cross(v1 - v0, v2 - v0));
+}
+
+double Triangle::PDFValue(const Point& origin, const Point& direction) const
+{
+    HitRecord rec;
+    if (!this->RayHit(Ray(origin, direction), rec, Interval(0.001, infinity)))
+        return 0;
+
+    return 1 / Area();
+}
+
+glm::vec3 Triangle::Random(const Point& origin)const
+{
+    return glm::vec3(1, 0, 0);
+}
 Color Triangle::GetColor()
 {
     return color;

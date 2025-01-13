@@ -8,14 +8,19 @@ struct Camera
 	Camera(uint16_t& height, uint16_t& width);
 	Camera();
 	void generate_viewport_variables(auto h, auto w);
-	Ray GetRay(size_t& row, size_t& col, const size_t& s_i = 0, const size_t& s_j = 0)const;
+	Ray GetRay(size_t& row, size_t& col)const;
+	Ray GetRay(int i, int j, int s_i, int s_j);
 	glm::vec3 GetCameraOrigin()const;
-	glm::vec3 PixelSampleSquare(const double& s_i, const double& s_j) const;
+	glm::vec3 PixelSampleSquare() const;
+	glm::vec3 PixelSampleSquare(int s_i, int s_j) const;
 	Point DefocusDiskSample()const;
 	void setCameraAngle(Point look_f = Point(0, 0, -1), Point look_a = Point(0), Point vup = Point(0, 1, 0),
 		double fov = 90);
 	float defocus_angle = 0;
 	float focus_dist = 10;
+	glm::vec3 GetPixelCenter(size_t& row, size_t& col);
+	glm::vec3 GetCameraOrigin();
+	int sqrt_spp;
 	double recip_sqrt_spp;
 private:
 	uint16_t sample_count;

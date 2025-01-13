@@ -33,11 +33,10 @@ private:
 	double aspect_ratio;
 	Camera cam;
 	ShapeList shapes;
+	ShapeList lights;
 	AABB shape_box;
-
 	int scene = 9;
-	int sample_count = 100;
-
+	int sample_count = 500;
 	int ray_depth = 8;
 	std::vector<size_t> image_horizontal_iterator, image_vertical_iterator;
 	std::vector<Color> colors;

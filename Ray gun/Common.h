@@ -58,6 +58,18 @@ inline glm::vec3 RandomUnitVector()
 	return glm::normalize(RandomInUnitSphere());
 }
 
+inline glm::vec3 RandomCosineDirection()
+{
+	auto r1 = random_double();
+	auto r2 = random_double();
+
+	double phi = 2 * Common::pi * r1;
+	auto x = cos(phi) * sqrt(r2);
+	auto y = sin(phi) * sqrt(r2);
+	auto z = sqrt(1 - r2);
+
+	return glm::vec3(x, y, z);
+}
 inline glm::vec3 RandomOnHemisphere(const glm::vec3& normal)
 {
 	auto on_unit_sphere = RandomUnitVector();

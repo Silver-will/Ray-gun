@@ -38,14 +38,16 @@ struct Triangle : public Shape
 	Triangle(const Triangle& tri);
 	void Translate(const glm::vec3& direction);
 	void Scale(const glm::vec3& scale);
-	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
+	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const override;
 	Color GetColor() override;
 	Point GetPos() override;
 	AABB GetBoundingBox()const override;
-
+	double PDFValue(const Point& origin, const Point& direction) const override;
+	glm::vec3 Random(const Point& origin)const override;
+	float Area() const;
 	AABB BBox;
 	Point v0, v1, v2;
-	float u, v, t;
+	//float u, v, t;
 	std::shared_ptr<Material> mat;
 	Color color = Color(.73, .73, .73);
 };

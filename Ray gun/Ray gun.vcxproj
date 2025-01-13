@@ -142,6 +142,8 @@
     <ClCompile Include="GLTFLoading.cpp" />
     <ClCompile Include="Hit.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="ONB.cpp" />
+    <ClCompile Include="PDF.cpp" />
     <ClCompile Include="Perlin.cpp" />
     <ClCompile Include="Polygun.cpp" />
     <ClCompile Include="Quad.cpp" />
@@ -157,6 +159,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="BSDFs\BSDF.h" />
+    <ClInclude Include="BSDFs\Disney.h" />
     <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
@@ -165,6 +169,8 @@
     <ClInclude Include="GLTFLoading.h" />
     <ClInclude Include="Hit.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="ONB.h" />
+    <ClInclude Include="PDF.h" />
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="Polygun.h" />
     <ClInclude Include="Quad.h" />

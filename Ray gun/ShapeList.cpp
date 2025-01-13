@@ -11,7 +11,7 @@ void ShapeList::Add(std::shared_ptr<Shape> object)
 	Bbox = AABB(Bbox, object->GetBoundingBox());
 }
 
-bool ShapeList::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool ShapeList::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
     HitRecord temp_rec;
     auto hit_anything = false;
@@ -36,4 +36,20 @@ void ShapeList::Clear()
 AABB ShapeList::GetBoundingBox() const
 {
     return Bbox;
+}
+
+double ShapeList::PDFValue(const Point& origin, const Point& direction) const
+{
+    auto weight = 1.0 / objects.size();
+    auto sum = 0.0;
+
+    for (const auto& object : objects)
+        sum += weight * object->PDFValue(origin, direction);
+
+    return sum;
+}
+
+glm::vec3 ShapeList::Random(const Point& origin) const{
+    auto int_size = int(objects.size());
+    return objects[random_int(0, int_size - 1)]->Random(origin);
 }

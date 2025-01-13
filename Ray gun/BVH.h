@@ -12,7 +12,7 @@ struct BVH_Node : public Shape
 	static bool box_compare_X(const std::shared_ptr<Shape> a, const std::shared_ptr<Shape> b);
 	static bool box_compare_Y(const std::shared_ptr<Shape> a, const std::shared_ptr<Shape> b);
 	static bool box_compare_Z(const std::shared_ptr<Shape> a, const std::shared_ptr<Shape> b);
-	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t) override;
+	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const override;
 	AABB GetBoundingBox() const;
 	
 private:

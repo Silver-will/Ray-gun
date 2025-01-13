@@ -1,5 +1,5 @@
 # Ray-gun
-A personal implementation of ray tracing techniques in peter shirley's series of ray tracing books
+A CPU based multithreaded ray tracer
 
 ![Scene](Scene.jpg)
 

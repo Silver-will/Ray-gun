@@ -26,7 +26,7 @@ Sphere::Sphere(Point orig, Point orig1, float rad, std::shared_ptr<Material> Mat
 	BBox = AABB(aabb, aabb1);
 }
 
-bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)
+bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)const
 {
 	auto center = LerpCenter(r.GetTime());
 	glm::vec3 oc = r.GetOrigin() - center;
@@ -58,6 +58,27 @@ bool Sphere::RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)
 	return true;
 }
 
+double Sphere::PDFValue(const Point& origin, const Point& direction) const
+{
+	HitRecord rec;
+	if (!this->RayHit(Ray(origin, direction), rec,Interval(0.001, infinity)))
+		return 0;
+
+	auto dist_squared = glm::dot(center - origin, center - origin);
+	auto cos_theta_max = std::sqrt(1 - radius * radius / dist_squared);
+	auto solid_angle = 2 * pi * (1 - cos_theta_max);
+
+	return  1 / solid_angle;
+}
+
+glm::vec3 Sphere::Random(const Point& origin) const {
+	glm::vec3 direction = center - origin;
+	auto distance_squared = glm::dot(direction, direction);
+	ONB uvw;
+	uvw.build_from_w(direction);
+	return uvw.transform(random_to_sphere(radius, distance_squared));
+}
+
 Color Sphere::GetColor()
 {
 	return color;
@@ -68,7 +89,7 @@ Point Sphere::GetPos()
 	return center;
 }
 
-Point Sphere::LerpCenter(double time)
+Point Sphere::LerpCenter(double time)const
 {
 	if (isMoving)
 	{
@@ -96,7 +117,7 @@ Translate::Translate(std::shared_ptr<Shape> s, const glm::vec3& displacement)
 }
 
 
-bool Translate::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool Translate::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
 	Ray offset_r(r.GetOrigin() - offset, r.GetDirection(), r.GetTime());
 
@@ -149,7 +170,7 @@ RotateY::RotateY(std::shared_ptr<Shape> p, double angle) :
 	box = AABB(min, max);
 }
 
-bool RotateY::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)
+bool RotateY::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 {
 	auto origin = r.GetOrigin();
 	auto direction = r.GetDirection();
