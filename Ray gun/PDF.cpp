@@ -24,7 +24,6 @@ double CosinePDF::Value(const glm::vec3& direction)const
 glm::vec3 CosinePDF::Generate() const
 {
 	return uvw.transform(RandomCosineDirection());
-
 }
 
 double HittablePDF::Value(const glm::vec3& direction)const

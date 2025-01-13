@@ -33,6 +33,7 @@ void Polygun::AddToScene(ShapeList& shapes)
     auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
     auto col = std::make_shared<Lambertian>(Color(0.65, 0.65, 0.05));
     auto glass = std::make_shared<Dielectric>(1.5f);
+    auto metal = std::make_shared<Metal>(Color(0.8, 0.8, 0.9), 1.0);
     //auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
     for (int i = 0; i < geometry.size(); i++)
     {
@@ -51,7 +52,7 @@ void Polygun::AddToScene(ShapeList& shapes)
             v1 += world_position;
             v2 += world_position;
             
-            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, col));
+            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, metal));
         }
     }
     auto stuff = shapes.objects.size();
@@ -199,6 +200,24 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
 
 }
 
+float Triangle::Area() const
+{
+    return 0.5f * glm::length(glm::cross(v1 - v0, v2 - v0));
+}
+
+double Triangle::PDFValue(const Point& origin, const Point& direction) const
+{
+    HitRecord rec;
+    if (!this->RayHit(Ray(origin, direction), rec, Interval(0.001, infinity)))
+        return 0;
+
+    return 1 / Area();
+}
+
+glm::vec3 Triangle::Random(const Point& origin)const
+{
+    return glm::vec3(1, 0, 0);
+}
 Color Triangle::GetColor()
 {
     return color;

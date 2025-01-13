@@ -22,6 +22,10 @@ inline void WriteColor(std::ofstream& out, const Color& col, const int samples)
 	g *= scale;
 	b *= scale;
 
+	if (r != r) r = 0.0;
+	if (g != g) g = 0.0;
+	if (b != b) b = 0.0;
+
 	r = LinearToGamma(r);
 	g = LinearToGamma(g);
 	b = LinearToGamma(b);
@@ -42,10 +46,6 @@ inline void WriteColorOnce(std::ofstream& out, const int samples, std::vector<Co
 		auto r = col.x;
 		auto g = col.y;
 		auto b = col.z;
-
-		if (r != r) r = 0.0;
-		if (g != g) g = 0.0;
-		if (b != b) b = 0.0;
 
 		r *= scale;
 		g *= scale;

@@ -42,7 +42,9 @@ struct Triangle : public Shape
 	Color GetColor() override;
 	Point GetPos() override;
 	AABB GetBoundingBox()const override;
-
+	double PDFValue(const Point& origin, const Point& direction) const override;
+	glm::vec3 Random(const Point& origin)const override;
+	float Area() const;
 	AABB BBox;
 	Point v0, v1, v2;
 	//float u, v, t;

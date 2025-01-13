@@ -14,9 +14,10 @@ struct ShapeList :  public Shape
 
 	void Clear();
 	void Add(std::shared_ptr<Shape> object);
+	
+	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const override;
 	double PDFValue(const Point& origin, const Point& direction) const override;
 	glm::vec3 Random(const Point& origin)const override;
-	bool RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const override;
 	AABB GetBoundingBox() const;
 
 private:

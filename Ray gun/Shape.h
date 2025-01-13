@@ -28,12 +28,23 @@ struct Sphere : public Shape
 	Sphere(Point orig,Point orig1, float rad, std::shared_ptr<Material> Mat);
 	bool RayHit(const Ray& r, HitRecord& hit,const Interval& ray_t)const override;
 	Color GetColor() override;
-	glm::vec3 Random(const Point& origin) const override;
-	double PDFValue(const Point& origin, const Point& direction) const override;
 	Point GetPos() override;
+	double PDFValue(const Point& origin, const Point& direction) const override;
+	glm::vec3 Random(const Point& origin)const override;
 	Point LerpCenter(double time)const;
 	AABB GetBoundingBox()const override;
 private:
+	static glm::vec3 random_to_sphere(double radius, double distance_squared) {
+		auto r1 = random_double();
+		auto r2 = random_double();
+		auto z = 1 + r2 * (std::sqrt(1 - radius * radius / distance_squared) - 1);
+
+		auto phi = 2 * pi * r1;
+		auto x = std::cos(phi) * std::sqrt(1 - z * z);
+		auto y = std::sin(phi) * std::sqrt(1 - z * z);
+
+		return glm::vec3(x, y, z);
+	}
 	static void GetSphereUV(const Point& p, double& u, double& v);
 	std::shared_ptr<Material> mat;
 	Point center;
@@ -42,15 +53,6 @@ private:
 	float radius;
 	bool isMoving;
 	AABB BBox;
-	static glm::vec3 random_to_sphere(double radius, double distance_squared) {
-		auto r1 = random_double();
-		auto r2 = random_double();
-		auto z = 1 + r2 * (sqrt(1 - radius * radius / distance_squared) - 1);
-		auto phi = 2 * pi * r1;
-		auto x = cos(phi) * sqrt(1 - z * z);
-		auto y = sin(phi) * sqrt(1 - z * z);
-		return glm::vec3(x, y, z);
-	}
 };
 
 struct Translate : public Shape
