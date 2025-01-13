@@ -28,8 +28,11 @@ Ray Camera::GetRay(int i, int j, int s_i, int s_j)
 {
 	auto r = static_cast<float>(i);
 	auto c = static_cast<float>(j);
-	glm::vec3 pixel_center = pixel100_loc + (r * pixel_delta_u) + (c * pixel_delta_v);
-	auto pixel_sample = pixel_center + PixelSampleSquare(s_i, s_j);
+	auto offset = PixelSampleSquare(s_i, s_j);
+	auto pixel_sample = pixel100_loc + ((r + offset.x) * pixel_delta_u)
+		+ ((j + offset.y) * pixel_delta_v);
+	//glm::vec3 pixel_center = pixel100_loc + (r * pixel_delta_u) + (c * pixel_delta_v);
+	//auto pixel_sample = pixel_center + PixelSampleSquare(s_i, s_j);
 	auto ray_origin = defocus_angle <= 0 ? center : DefocusDiskSample();
 	auto ray_direction = pixel_sample - ray_origin;
 	auto ray_time = random_double();
@@ -83,9 +86,9 @@ glm::vec3 Camera::PixelSampleSquare() const
 
 glm::vec3 Camera::PixelSampleSquare(int s_i, int s_j) const
 {
-	float px = -0.5 + recip_sqrt_spp * (s_i + random_double());
-	float py = -0.5 + recip_sqrt_spp * (s_j + random_double());
-	return glm::vec3((px * pixel_delta_u) + (py * pixel_delta_v));
+	float px = -0.5 + (recip_sqrt_spp * (s_i + random_double()));
+	float py = -0.5 + (recip_sqrt_spp * (s_j + random_double()));
+	return glm::vec3(px,py,0);
 }
 
 void Camera::setCameraAngle(Point look_f, Point look_a, Point vup, double fov)
