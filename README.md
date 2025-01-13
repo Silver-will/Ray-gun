@@ -9,18 +9,13 @@ Render times where Measured in Release mode, on a single thread.
 
 
 ## Upcoming Work list
-[] Improved monte carlo sampling
-
-[] bidirectional path tracing
-
-[] disney brdf
-
-[] denoising
-
-[] wavefront path tracing?
-
-[] improve brdf
-
-[] port to opencl
-
-[] embree
+* [x] Improved monte carlo sampling
+* [] bidirectional path tracing
+* [] disney brdf
+* [] denoising
+* [] wavefront path tracing?
+* [] improve brdf
+* [] port to opencl
+* [] embree
+* [] scene loading
+* [] Texturing
