@@ -1,10 +1,14 @@
 #include "GLTFLoading.h"
 #include <print>
-#include <fastgltf/glm_element_traits.hpp>
-#include <fastgltf/parser.hpp>
-#include <fastgltf/tools.hpp>
 
 
+void Node::RefreshTransform(const glm::mat4& parentMatrix)
+{
+    worldTransform = parentMatrix * localTransform;
+    for (auto c : children) {
+        c->RefreshTransform(worldTransform);
+    }
+}
 std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
 {
     std::cout << "Loading Input Model at: " << filePath << std::endl;
@@ -51,13 +55,23 @@ std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
 
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
+    std::vector<ImageTexture> images;
+
 
     for (fastgltf::Mesh& mesh : gltf.meshes) {
         MeshData new_mesh;
+        BsdfMaterial materialData;
 
         indices.clear();
         vertices.clear();
 
+        //Load material data
+        for (fastgltf::Image& image : gltf.images)
+        {
+            auto img = std::make_shared<ImageTexture>("")
+        }
+
+        //Load vertex data
         for (auto&& p : mesh.primitives) {
             GeoSurface newSurface;
             newSurface.startIndex = (uint32_t)indices.size();
