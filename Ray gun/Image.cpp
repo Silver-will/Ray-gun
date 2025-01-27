@@ -412,7 +412,7 @@ void Image::SetUpGltfScene()
 	Mesh model("assets/dragon3.glb", Point(0, -1.5, 4));
 	model.AddToScene(shapes, metal);
 
-	model.SetWorldPos(Point(-3, -1.5, 2));
+	model.SetWorldPos(Point(-3, 1.5, 2.0f));
 	model.AddToScene(shapes, glass);
 
 	model.SetWorldPos(Point(3, 1.5, 2));
