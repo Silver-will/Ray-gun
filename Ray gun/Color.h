@@ -62,7 +62,7 @@ inline void WriteColorOnce(std::ofstream& out, const int samples, std::vector<Co
 
 inline Color RayColor(const Ray& r, ShapeList& shapes, int max_depth,const Shape& lights) 
 {
-	static Color background(0.0);
+	static Color background(0.8f);
 	if (max_depth <= 0)
 		return Color(0.0f);
 	

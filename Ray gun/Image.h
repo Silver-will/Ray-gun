@@ -36,7 +36,7 @@ private:
 	ShapeList lights;
 	AABB shape_box;
 	int scene = 9;
-	int sample_count = 600;
+	int sample_count = 10;
 	int ray_depth = 8;
 	std::vector<size_t> image_horizontal_iterator, image_vertical_iterator;
 	std::vector<Color> colors;

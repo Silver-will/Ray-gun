@@ -74,7 +74,8 @@ Image::Image(uint16_t width, double aspectRatio)
 		FinalScene();
 	case 9:
 		SetCameraFocusValues(0, 10.0);
-		cam.setCameraAngle(Point(0, 0, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
+		//-3 6 9
+		cam.setCameraAngle(Point(-3, 6, 9), Point(0, 0, 0), Point(0, 1, 0), 80.0);
 		SetUpGltfScene();
 	default:
 		break;
@@ -253,7 +254,7 @@ void Image::SetUpQuads()
 	shapes.Add(std::make_shared<Quad>(Point(-2, 3, 1), Point(4, 0, 0), Point(0, 0, 4), upperOrange));
 	shapes.Add(std::make_shared<Quad>(Point(-1, 3, 2.5), Point(2, 0, 0), Point(0, 0, -2), light));
 	shapes.Add(std::make_shared<Quad>(Point(-2, -3, 5), Point(4, 0, 0), Point(0, 0, -4), lowerTeal));
-	shapes.Add(std::make_shared	<Triangle>(Point(-1, -1, 1), Point(1, -1, 1), Point(0, 1, 1), lowerTeal));
+	//shapes.Add(std::make_shared	<Triangle>(Point(-1, -1, 1), Point(1, -1, 1), Point(0, 1, 1), lowerTeal));
 
 
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
@@ -307,7 +308,7 @@ void Image::SetUpCornellSmoke()
 	shapes.Add(std::make_shared<Quad>(Point(555, 555, 555), Point(-555, 0, 0), Point(0, 0, -555), white));
 	shapes.Add(std::make_shared<Quad>(Point(0, 0, 555), Point(555, 0, 0), Point(0, 555, 0), white));
   
-	shapes.Add(std::make_shared	<Triangle>(Point(345, 276, 450), Point(414, 138, 450), Point(276, 138, 450),green));
+	//shapes.Add(std::make_shared	<Triangle>(Point(345, 276, 450), Point(414, 138, 450), Point(276, 138, 450),green));
 	
 	std::shared_ptr<Shape> box1 = Box(Point(0), Point(165, 330, 165), white);
 	box1 = std::make_shared<RotateY>(box1, 15);
@@ -333,10 +334,16 @@ void Image::SetUpGltfScene()
 	auto rightBlue = std::make_shared<Lambertian>(Color(0, 0, 1));
 	auto upperOrange = std::make_shared<Lambertian>(Color(1, 0.5, 0));
 	auto lowerTeal = std::make_shared<Lambertian>(Color(0.2, 0.8, 0.8));
+	auto col = std::make_shared<Lambertian>(Color(0.65, 0.65, 0.05));
+	auto glass = std::make_shared<Dielectric>(1.5f);
+	auto metal = std::make_shared<Metal>(Color(0.8, 0.8, 0.9), 0.5);
 	auto teal = lowerTeal;
-	auto light = std::make_shared<DiffuseLight>(Color(14));
+	auto light = std::make_shared<DiffuseLight>(Color(15));
 	auto purple = std::make_shared<Lambertian>(Color(0.521, 0.349, 0.533));
-	
+
+	auto checkerTex = std::make_shared<CheckerTexture>(0.32, Color(0, 1, 0), Color(0.2, 0.8, 0.8));
+	auto checker = std::make_shared<Lambertian>(checkerTex);
+	/*
 	//left
 	shapes.Add(std::make_shared<Quad>(Point(-4, -4, 5), Point(0, 0, -8), Point(0, 8, 0), leftRed));
 	//back
@@ -352,16 +359,72 @@ void Image::SetUpGltfScene()
 	//front
 	shapes.Add(std::make_shared<Quad>(Point(-4, -4, 10), Point(8, 0, 0), Point(0, 8, 0), backGreen));
 
-	shapes.Add(std::make_shared<Quad>(Point(-1.5, 4, 2), Point(3, 0, 0), Point(0, 0, 2), light));
 	//shapes.Add(std::make_shared<Quad>(Point(-1, -2, 4), Point(2, 0, 0), Point(0, 0, -2), light));
 	//shapes.Add(std::make_shared<Sphere>(Point(0, 130, 0), 30.0f, light));
-
 	Mesh model("assets/monkey.glb", Point(0,-0.8,4));
 	model.AddToScene(shapes);
+	*/
 
+	for (int a = -22; a < 22; a++)
+	{
+		for (int b = -22; b < 22; b++)
+		{
+			double choose_mat = random_double();
+			Point center = Point(a + 0.9f * random_double(), -3.0f, b + 0.9f * random_double());
+
+			if (glm::length(center - Point(4, 0.2, 0)) > 0.9f)
+			{
+				if (choose_mat < 0.1f)
+				{
+					shapes.Add(std::make_shared<Sphere>(Point(center), 0.2f, light));
+				}
+				if (choose_mat < 0.8f)
+				{
+					auto albedo = RandomVector() * RandomVector();
+					auto center2 = center + Point(0, random_double(0, .5), 0);
+					shapes.Add(std::make_shared<Sphere>(center, center2, 0.2f, std::make_shared<Lambertian>(albedo)));
+				}
+				else if (choose_mat < 0.95)
+				{
+					auto albedo = RandomVector(0.5, 1);
+					auto fuzz = random_double(0, 0.5);
+					auto metal = std::make_shared<Metal>(albedo, fuzz);
+					shapes.Add(std::make_shared<Sphere>(center, 0.2f, metal));
+				}
+				else
+				{
+					auto dielectric = std::make_shared<Dielectric>(1.5f);
+					shapes.Add(std::make_shared<Sphere>(center, 0.2f, dielectric));
+				}
+			}
+		}
+	}
+
+	shapes.Add(std::make_shared<Quad>(Point(-1.5, 8, 2), Point(3, 0, 0), Point(0, 0, 2), light));
+	//shapes.Add(std::make_shared<Sphere>(Point(-0.5f, -3, 3.5f), 0.3f, light));
+	//shapes.Add(std::make_shared<Sphere>(Point(0.5f, -3, 4.5f), 0.3f, light));
+	//shapes.Add(std::make_shared<Sphere>(Point(-0.5f, -3, 3.5f), 0.3f, light));
+
+	shapes.Add(std::make_shared<Sphere>(Point(-10, 15,25), 10.0f, light));
+
+	shapes.Add(std::make_shared<Quad>(Point(-40, -6, 40), Point(80, 0, 0), Point(0, 0, -80), checker));
+
+	Mesh model("assets/dragon3.glb", Point(0, -1.5, 4));
+	model.AddToScene(shapes, metal);
+
+	model.SetWorldPos(Point(-3, -1.5, 2));
+	model.AddToScene(shapes, glass);
+
+	model.SetWorldPos(Point(3, 1.5, 2));
+	model.AddToScene(shapes, leftRed);
 	auto empty_material = std::make_shared<Material>();
-	lights.Add(make_shared<Quad>(Point(-1.5, 4, 2), Point(3, 0, 0), Point(0, 0, 2), empty_material));
+	lights.Add(make_shared<Quad>(Point(-1.5, 8, 2), Point(3, 0, 0), Point(0, 0, 2), empty_material));
+	lights.Add(std::make_shared<Sphere>(Point(-10, 15, 25), 10.0f, empty_material));
+
+
 	//lights.Add(std::make_shared<Sphere>(Point(0, -1, 0), 1.0f, empty_material));
+	//bottom	
+
 	shapes = ShapeList(std::make_shared<BVH_Node>(shapes));
 }
 

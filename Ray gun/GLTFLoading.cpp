@@ -68,7 +68,7 @@ std::optional<std::vector<MeshData>>LoadGLTF(const std::string_view filePath)
         //Load material data
         for (fastgltf::Image& image : gltf.images)
         {
-            auto img = std::make_shared<ImageTexture>("")
+            //auto img = std::make_shared<ImageTexture>("")
         }
 
         //Load vertex data

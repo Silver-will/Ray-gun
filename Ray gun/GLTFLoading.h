@@ -42,9 +42,9 @@ struct BsdfMaterial {
 struct MeshData {
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
-	std::vector<Node> nodes;
-	BsdfMaterial materialData;
-	std::vector <std::shared_ptr<ImageTexture>> images;
+	//std::vector<Node> nodes;
+	//BsdfMaterial materialData;
+	//std::vector <std::shared_ptr<ImageTexture>> images;
 	std::vector<GeoSurface> surfaces;
 };
 
