@@ -28,13 +28,8 @@ Point Mesh::GetPos()
     return world_position;
 }
 
-void Mesh::AddToScene(ShapeList& shapes)
+void Mesh::AddToScene(ShapeList& shapes, std::shared_ptr<Material> mat)
 {
-    auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
-    auto col = std::make_shared<Lambertian>(Color(0.65, 0.65, 0.05));
-    auto glass = std::make_shared<Dielectric>(1.5f);
-    auto metal = std::make_shared<Metal>(Color(0.8, 0.8, 0.9), 0.5);
-    //auto earthTex = std::make_shared<ImageTexture>("earthmap.jpg");
     for (int i = 0; i < LoadedObject.size(); i++)
     {
         for (int j = 0; j < LoadedObject[i].indices.size(); j += 3)
@@ -48,15 +43,22 @@ void Mesh::AddToScene(ShapeList& shapes)
             auto v1 = LoadedObject[i].vertices[i1].position;
             auto v2 = LoadedObject[i].vertices[i2].position;
 
+            auto n0 = LoadedObject[i].vertices[i0].normal;
+            auto n1 = LoadedObject[i].vertices[i1].normal;
+            auto n2 = LoadedObject[i].vertices[i2].normal;
+
             v0 += world_position;
             v1 += world_position;
             v2 += world_position;
             
-            shapes.Add(std::make_shared<Triangle>(v0, v1, v2, metal));
+           shapes.Add(std::make_shared<Triangle>(v0, v1,v2 ,n0, n1, n2, mat));
         }
     }
-    auto stuff = shapes.objects.size();
-    stuff += 2;
+}
+
+void Mesh::SetWorldPos(const Point& pos)
+{
+    world_position = pos;
 }
 
 bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
@@ -99,8 +101,10 @@ bool Triangle::RayHit(const Ray& r, HitRecord& hit, const Interval& ray_t)const
     hit.v = v;
     hit.p = r.At(hit.t);
     auto outward_facing_normal = glm::normalize(glm::cross(e0, e1));
+    auto interpolated_normal = u * n0 + v * n1 + (1 - u - v) * n2;
     //hit.SetFaceNormal(r, outward_facing_normal);
-    hit.normal = -outward_facing_normal;
+    //hit.normal = -outward_facing_normal;
+    hit.normal = glm::normalize(interpolated_normal);
     //hit.normal = glm::normalize(glm::cross(e0, e1));
     hit.mat = mat;
 

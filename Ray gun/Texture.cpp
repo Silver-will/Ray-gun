@@ -43,17 +43,18 @@ ImageTexture::ImageTexture(const char* filename) : image(filename)
 
 }
 
-void ImageTexture::LoadImage(const char* filename)
+bool ImageTexture::LoadImage(const char* filename)
 {
-	if (image.Load(filename))return;
-	if (image.Load("images/"s + filename))return;
-	if (image.Load("../images/"s + filename))return;
-	if (image.Load("../../images/"s + filename))return;
-	if (image.Load("../../../images/"s + filename))return;
-	if (image.Load("../../../../images/"s + filename))return;
-	if (image.Load("../../../../../images/"s + filename))return;
-	if (image.Load("../../../../../../images/"s + filename))return;
+	if (image.Load(filename))return true;
+	if (image.Load("images/"s + filename))return true;
+	if (image.Load("../images/"s + filename))return true;
+	if (image.Load("../../images/"s + filename))return true;
+	if (image.Load("../../../images/"s + filename))return true;
+	if (image.Load("../../../../images/"s + filename))return true;
+	if (image.Load("../../../../../images/"s + filename))return true;
+	if (image.Load("../../../../../../images/"s + filename))return true;
 	std::cerr << "ERROR: Could not load image file '" << filename << "'.\n";
+	return false;
 }
 
 Color ImageTexture::Value(double u, double v, const Point& p)const

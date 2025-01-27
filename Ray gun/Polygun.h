@@ -8,7 +8,7 @@
 #include "AABB.h"
 struct Triangle : public Shape
 {
-	Triangle(Point V0, Point V1, Point V2, std::shared_ptr<Material> Mat) : v0{ V0 }, v1{ V1 }, v2{ V2 }, mat{ Mat } {
+	Triangle(Point V0, Point V1, Point V2, Point _n0, Point _n1, Point _n2, std::shared_ptr<Material> Mat) : v0{ V0 }, v1{ V1 }, v2{ V2 }, n0{ _n0 }, n1{ _n1}, n2{ _n2 }, mat{ Mat } {
 		std::vector<Point> vertices;
 		vertices.push_back(v0);
 		vertices.push_back(v1);
@@ -47,6 +47,7 @@ struct Triangle : public Shape
 	float Area() const;
 	AABB BBox;
 	Point v0, v1, v2;
+	Point n0, n1, n2;
 	//float u, v, t;
 	std::shared_ptr<Material> mat;
 	Color color = Color(.73, .73, .73);
@@ -56,9 +57,10 @@ struct Mesh
 {
 	Mesh(const std::vector<MeshData>& _geometry);
 	Mesh(std::string_view model_path, Point pos);
-	void AddToScene(ShapeList& shapes);
+	void AddToScene(ShapeList& shapes, std::shared_ptr<Material> mat);
 	Color GetColor();
 	Point GetPos();
+	void SetWorldPos(const Point& pos);
 
 private:
 	std::vector<MeshData> LoadedObject;
